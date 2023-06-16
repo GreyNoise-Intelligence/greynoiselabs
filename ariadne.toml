@@ -1,0 +1,5 @@
+[tool.ariadne-codegen]
+schema_path = "schemas/schema.graphql"
+queries_path = "queries"
+target_package_name="labs_graphql_client"
+target_package_path="src"
