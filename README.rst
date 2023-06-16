@@ -1,11 +1,11 @@
-================
+====================================
 Python GreyNoise Labs GraphQL Client
-================
+====================================
 
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
     :target: https://opensource.org/licenses/MIT
 
-This is an abstract python library generated from the `GreyNoise Labs GraphQL API`_ service.
+This is an abstract python library generated from the `GreyNoise Labs API`_ service.
 
 .. _GreyNoise Labs API: https://api.labs.greynoise.io/
 
@@ -24,6 +24,7 @@ Quick Start
 Example Code
 
 ..  code-block:: python
+
     import os
     import asyncio
     from labs_graphql_client.client import Client

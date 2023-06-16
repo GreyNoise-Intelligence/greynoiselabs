@@ -16,6 +16,8 @@ lint: requirements
 .PHONY: build
 build: requirements
 	ariadne-codegen --config ariadne.toml
+	black src
+	isort src/**/*.py
 	docker build .
 
 .PHONY: clean
