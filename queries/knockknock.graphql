@@ -1,5 +1,5 @@
-query TopKnocks {
-  topKnocks($ip: String!) {
+query TopKnocks($ip: String!) {
+  topKnocks(ip: $ip) {
     queryInfo {
       resultsAvailable
       resultsLimit

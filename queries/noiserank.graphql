@@ -1,5 +1,5 @@
-query NoiseRank {
-  noiseRank($ip: String!) {
+query NoiseRank($ip: String!) {
+  noiseRank(ip: $ip) {
     queryInfo {
       resultsAvailable
       resultsLimit
