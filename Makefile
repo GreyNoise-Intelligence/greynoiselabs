@@ -1,8 +1,12 @@
 # include environment variables from a file
 -include .env
 
+.PHONY: requirements
+requirements: 
+	pip3 install --user -r requirements/dev.txt
+
 .PHONY: lint
-lint:
+lint: requirements
 	yamllint .
 	black --check src 
 	isort --check-only src/**/*.py
@@ -10,8 +14,7 @@ lint:
 	flake8 src
 
 .PHONY: build
-build:
-	pip3 install --user -r requirements/dev.txt
+build: requirements
 	ariadne-codegen --config ariadne.toml
 	docker build .
 
