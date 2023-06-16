@@ -1,0 +1,13 @@
+query TopPopularIPs {
+  topPopularIPs {
+    queryInfo {
+      resultsAvailable
+      resultsLimit
+    }
+    popularIPs {
+      ip
+      request_count
+      users_count
+    }
+  }
+}
