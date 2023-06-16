@@ -18,7 +18,7 @@ INSTALL_REQUIRES = [
 ]
 
 setup(
-    name="labs_graphql_client",
+    name="labs-graphql-client",
     version="0.1.0",
     description="Abstraction to interact with GreyNoise Labs GraphQL API.",
     url="https://api.labs.greynoise.io/",
@@ -46,5 +46,5 @@ setup(
     ],
     zip_safe=False,
     keywords=["internet", "scanning", "threat intelligence", "security"],
-    download_url="https://github.com/GreyNoise-Intelligence/labs_graphql_client",
+    download_url="https://github.com/GreyNoise-Intelligence/labs-graphql-client",
 )

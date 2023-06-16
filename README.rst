@@ -19,7 +19,7 @@ Quick Start
 ===========
 **Install the library**:
 
-``pip install labs_graphql_client`` or ``python setup.py install``
+``pip install labs-graphql-client`` or ``python setup.py install``
 
 Example Code
 
