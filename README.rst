@@ -22,6 +22,7 @@ Quick Start
 ``pip install labs_graphql_client`` or ``python setup.py install``
 
 **Example code**:
+
 ..  code-block:: python
     import os
     import asyncio
