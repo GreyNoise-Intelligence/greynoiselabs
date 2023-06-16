@@ -1,5 +1,5 @@
 query TopKnocks {
-  topKnocks(ip: "") {
+  topKnocks($ip: String!) {
     queryInfo {
       resultsAvailable
       resultsLimit
