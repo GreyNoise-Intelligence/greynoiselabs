@@ -15,6 +15,7 @@ jobs:
       - name: Lint
         run: make lint
   build:
+    needs: lint
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@master
@@ -38,6 +39,9 @@ jobs:
     permissions:
       id-token: write # Allows the action to upload a release
     steps:
+      - uses: actions/checkout@master
+      - name: Build
+        run: make build
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
