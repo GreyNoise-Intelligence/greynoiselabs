@@ -27,7 +27,7 @@ Example Code
 
     import os
     import asyncio
-    from labs_graphql_client.client import Client
+    from greynoiselabs.client import Client
 
     client = Client("https://api.labs.greynoise.io/1/query",
                     {"Authorization": f"Bearer {os.environ['AUTH_TOKEN']}"})

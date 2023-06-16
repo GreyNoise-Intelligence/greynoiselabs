@@ -27,22 +27,17 @@ jobs:
           author_name: Matt Lehman
           author_email: matt@greynoise.io
           message: "Generated client updates"
-          add: "src/labs-graphql-client/**"
-  pypi-publish:
-    name: Upload release to PyPI
+          add: "src/greynoiselabs/**"
+  publish:
     needs: build
     if: github.ref =='refs/heads/main'
     runs-on: ubuntu-22.04
     environment:
       name: pypi
-      url: https://pypi.org/p/labs-graphql-client
-    permissions:
-      id-token: write # Allows the action to upload a release
+      url: https://pypi.org/p/greynoiselabs
+    env:
+      TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
     steps:
       - uses: actions/checkout@master
-      - name: Build
-        run: make build
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.TWINE_PASSWORD }}
+      - name: Publish to PyPI
+        run: make publish

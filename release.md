@@ -33,7 +33,7 @@ Version `dev`_
 
 The file also needs to conclude with the following:
 ```
-.. _`dev`: https://github.com/GreyNoise-Intelligence/pygreynoise/compare/v0.5.0...HEAD
+.. _`dev`: https://github.com/GreyNoise-Intelligence/greynoiselabs/compare/v0.5.0...HEAD
 ```
 Ensure that the end of the line is from the previous version to HEAD
 

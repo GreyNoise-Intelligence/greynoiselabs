@@ -23,7 +23,7 @@ if not match:
                       text)
         f.seek(0)
         f.write(text)
-        LINK_STRING = (".. _`dev`: https://github.com/GreyNoise-Intelligence/pygreynoise/"
+        LINK_STRING = (".. _`dev`: https://github.com/GreyNoise-Intelligence/greynoiselabs/"
                        "compare/v{}...HEAD").format(ver)
         f.write(LINK_STRING)
         f.truncate()

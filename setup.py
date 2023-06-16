@@ -46,5 +46,5 @@ setup(
     ],
     zip_safe=False,
     keywords=["internet", "scanning", "threat intelligence", "security"],
-    download_url="https://github.com/GreyNoise-Intelligence/labs-graphql-client",
+    download_url="https://github.com/GreyNoise-Intelligence/greynoiselabs",
 )
