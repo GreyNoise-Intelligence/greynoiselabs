@@ -27,3 +27,4 @@ jobs:
           author_email: matt@greynoise.io
           message: "Generated client updates"
           add: "src/labs_graphql_client/**"
+          push: ${GITHUB_REF##*/}
