@@ -20,6 +20,15 @@ build: requirements
 	isort src/**/*.py
 	docker build .
 
+.PHONY: install
+install: build
+	pip3 install -r requirements/common.txt && python3 setup.py sdist bdist_wheel
+	pip3 install --force-reinstall dist/*.whl
+
+.PHONY: publish
+publish:
+	twine upload --username __token__ --disable-progress-bar dist/*
+
 .PHONY: clean
 clean:
-	echo "clean"
+	rm -rf build dist
