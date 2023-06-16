@@ -21,7 +21,7 @@ Quick Start
 
 ``pip install labs_graphql_client`` or ``python setup.py install``
 
-**Example code**:
+Example Code
 
 ..  code-block:: python
     import os
