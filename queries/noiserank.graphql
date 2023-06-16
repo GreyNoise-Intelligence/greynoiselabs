@@ -1,0 +1,17 @@
+query NoiseRank {
+  noiseRank(ip: "") {
+    queryInfo {
+      resultsAvailable
+      resultsLimit
+    }
+    ips {
+      country_pervasiveness
+      ip
+      noise_score
+      payload_diversity
+      port_diversity
+      request_rate
+      sensor_pervasiveness
+    }
+  }
+}
