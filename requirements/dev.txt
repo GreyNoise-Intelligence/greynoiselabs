@@ -4,5 +4,5 @@ ariadne-codegen==0.7.1
 advbumpversion==1.2.0
 ipython==8.13.2;python_version>='3'
 pre-commit==3.3.2
-tox==4.4.5
+tox==4.6.3
 twine==4.0.2
