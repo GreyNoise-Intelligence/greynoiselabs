@@ -1,16 +1,11 @@
-query TopHTTPRequests {
+query getRequests {
   topHTTPRequests {
-    queryInfo {
-      resultsAvailable
-      resultsLimit
-    }
     httpRequests {
-      method
       path
-      pervasiveness
       request_count
-      request_headers
       source_ip_count
+      request_headers
+      pervasiveness
     }
   }
 }

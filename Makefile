@@ -30,6 +30,10 @@ publish: install
 	pip3 install twine
 	TWINE_PASSWORD=${TWINE_PASSWORD} twine upload --username __token__ --disable-progress-bar dist/*
 
+.PHONY: bump
+bump:
+	bumpversion --allow-dirty --verbose patch
+
 .PHONY: clean
 clean:
 	rm -rf build dist
