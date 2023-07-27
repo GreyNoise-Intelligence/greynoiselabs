@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name="greynoiselabs",
-    version="0.1.2",
+    version="0.1.3",
     description="Abstraction to interact with GreyNoise Labs GraphQL API.",
     url="https://api.labs.greynoise.io/",
     author="GreyNoise Intelligence",
