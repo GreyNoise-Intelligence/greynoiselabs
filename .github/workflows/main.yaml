@@ -41,5 +41,7 @@ jobs:
       TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
     steps:
       - uses: actions/checkout@master
+      - name: Bump version
+        run: make bump
       - name: Publish to PyPI
         run: make publish
