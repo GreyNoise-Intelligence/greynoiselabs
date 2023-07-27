@@ -10,13 +10,6 @@ def read(fname):
     with open(os.path.join(os.path.dirname(__file__), fname)) as input_file:
         return input_file.read()
 
-
-INSTALL_REQUIRES = [
-    "pydantic",
-    "httpx",
-    "websockets",
-]
-
 setup(
     name="greynoiselabs",
     version="0.1.0",
@@ -27,7 +20,7 @@ setup(
     license="MIT",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
-    install_requires=INSTALL_REQUIRES,
+    install_requires=read("requirements/common.txt").split("\n"),
     long_description=read("README.rst") + "\n\n" + read("CHANGELOG.rst"),
     python_requires=">=3.0, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
     classifiers=[
@@ -44,6 +37,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries",
     ],
+    entry_points={"console_scripts": ["greynoiselabs = greynoiselabs.cli.main:app"]},
     zip_safe=False,
     keywords=["internet", "scanning", "threat intelligence", "security"],
     download_url="https://github.com/GreyNoise-Intelligence/greynoiselabs",

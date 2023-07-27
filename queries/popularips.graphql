@@ -1,9 +1,5 @@
-query TopPopularIPs {
+query getIPs {
   topPopularIPs {
-    queryInfo {
-      resultsAvailable
-      resultsLimit
-    }
     popularIPs {
       ip
       request_count

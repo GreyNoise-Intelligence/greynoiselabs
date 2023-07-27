@@ -1,0 +1,21 @@
+query getKnocks($ip: String!) {
+  topKnocks(ip: $ip) {
+    knock {
+      source_ip
+      headers
+      apps
+      emails
+      favicon_mmh3_128
+      favicon_mmh3_32
+      ips
+      knock_port
+      jarm
+      last_seen
+      last_crawled
+      links
+      title
+      tor_exit
+    }
+  }
+  
+}

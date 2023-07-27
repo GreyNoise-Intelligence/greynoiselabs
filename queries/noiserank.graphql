@@ -1,13 +1,9 @@
-query NoiseRank($ip: String!) {
+query getNoiseRanks($ip: String!) {
   noiseRank(ip: $ip) {
-    queryInfo {
-      resultsAvailable
-      resultsLimit
-    }
-    ips {
-      country_pervasiveness
+    ips{
       ip
       noise_score
+      country_pervasiveness
       payload_diversity
       port_diversity
       request_rate
