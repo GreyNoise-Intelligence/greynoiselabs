@@ -11,27 +11,27 @@ requirements:
 .PHONY: lint
 lint: requirements
 	. venv/bin/activate
-	yamllint .
-	black --check src 
-	isort --check-only src/**/*.py
-	rst-lint *.rst
-	flake8 src
+	venv/bin/yamllint .
+	venv/bin/black --check src 
+	venv/bin/isort --check-only src/**/*.py
+	venv/bin/rst-lint *.rst
+	venv/bin/flake8 src
 
 .PHONY: lint-fix
 lint-fix: requirements
 	. venv/bin/activate
-	yamllint .
-	black src 
-	isort src/**/*.py
-	rst-lint *.rst
-	flake8 src
+	venv/bin/yamllint .
+	venv/bin/black src 
+	venv/bin/isort src/**/*.py
+	venv/bin/rst-lint *.rst
+	venv/bin/flake8 src
 
 .PHONY: build
 build: requirements
 	. venv/bin/activate
-	ariadne-codegen --config ariadne.toml
-	black src
-	isort src/**/*.py
+	venv/bin/ariadne-codegen --config ariadne.toml
+	venv/bin/black src
+	venv/bin/isort src/**/*.py
 	docker build .
 
 .PHONY: install
