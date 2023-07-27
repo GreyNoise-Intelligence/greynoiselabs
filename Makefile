@@ -1,5 +1,6 @@
 # include environment variables from a file
 -include .env
+SHELL := /bin/bash
 
 .PHONY: requirements
 requirements:
