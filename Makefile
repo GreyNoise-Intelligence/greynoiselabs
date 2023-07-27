@@ -10,6 +10,7 @@ requirements:
 
 .PHONY: lint
 lint: requirements
+	. venv/bin/activate
 	yamllint .
 	black --check src 
 	isort --check-only src/**/*.py
@@ -18,6 +19,7 @@ lint: requirements
 
 .PHONY: lint-fix
 lint-fix: requirements
+	. venv/bin/activate
 	yamllint .
 	black src 
 	isort src/**/*.py
@@ -26,6 +28,7 @@ lint-fix: requirements
 
 .PHONY: build
 build: requirements
+	. venv/bin/activate
 	ariadne-codegen --config ariadne.toml
 	black src
 	isort src/**/*.py
