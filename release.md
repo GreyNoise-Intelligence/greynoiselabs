@@ -75,12 +75,12 @@ Once bumpversion is successful, push the branch to Github and create a PR for th
 
 ## Validation PR and merge
 
-Once the PR is created CircleCI should begin the validation.  Use CircleCI to validate a successful
+Once the PR is created Github should begin the validation.  Use Github to validate a successful
 build then merge the PR into master.
 
 ## Push tag and validate release
 
-Once the PR is merged, push the new tag, then use CircleCI to confirm the new tag builds
+Once the PR is merged, push the new tag, then use Github to confirm the new tag builds
 successfully and pushes to PyPI
 
 `git push --tags`
