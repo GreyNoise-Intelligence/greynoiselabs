@@ -44,13 +44,12 @@ jobs:
       - name: Write release version
         run: |
           CUSTOM_TAG=$(cat .bumpversion.cfg | grep "current_version =" | cut -d' ' -f3)
-          echo Version: $CUSTOM_TAG
-          echo "CUSTOM_TAG=$CUSTOM_TAG" >> $GITHUB_ENV
+          echo Version: v$CUSTOM_TAG
+          echo "CUSTOM_TAG=v$CUSTOM_TAG" >> $GITHUB_ENV
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WITH_V: true
   publish:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-22.04
