@@ -12,7 +12,7 @@ jobs:
         id: github_release
         uses: mikepenz/release-changelog-builder-action@v3
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GREYNOISELABS_PAT }}
         with:
           # yamllint disable rule:line-length
           configurationJson: |
