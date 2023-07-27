@@ -44,12 +44,14 @@ install:
 
 .PHONY: publish
 publish: install
+	. venv/bin/activate
 	venv/bin/pip3 install twine
 	TWINE_PASSWORD=${TWINE_PASSWORD} venv/bin/twine upload --username __token__ --disable-progress-bar dist/*
 
 .PHONY: bump
 bump:
-	bumpversion --allow-dirty --verbose patch
+	. venv/bin/activate
+	venv/bin/bumpversion --allow-dirty --verbose patch
 
 .PHONY: clean
 clean:
