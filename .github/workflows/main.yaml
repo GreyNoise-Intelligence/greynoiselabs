@@ -27,7 +27,7 @@ jobs:
           author_name: Matt Lehman
           author_email: matt@greynoise.io
           message: "Generated client updates"
-          add: "src/greynoiselabs/**"
+          add: "src/greynoiselabs/api/**"
   publish:
     needs: build
     if: github.ref =='refs/heads/main'

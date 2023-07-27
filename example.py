@@ -1,7 +1,7 @@
 import os
 import json
 import asyncio
-from greynoiselabs.client import Client
+from greynoiselabs.api.client import Client
 
 client = Client("https://api.labs.greynoise.io/1/query",
                 {"Authorization": f"Bearer {os.environ['AUTH_TOKEN']}"})   
