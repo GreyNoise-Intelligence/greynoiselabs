@@ -1,6 +1,6 @@
 [tool.ariadne-codegen]
 schema_path = "schemas/schema.graphql"
 queries_path = "queries"
-target_package_name="greynoiselabs"
-target_package_path="src"
+target_package_name="api"
+target_package_path="src/greynoiselabs"
 convert_to_snake_case="false"
