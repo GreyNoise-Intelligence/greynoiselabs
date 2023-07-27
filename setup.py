@@ -22,7 +22,7 @@ setup(
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     install_requires=read("requirements/common.txt").split("\n"),
-    long_description=read("README.rst") + "\n\n" + read("CHANGELOG.rst"),
+    long_description=read("README.rst") + "\n\n" + read("CHANGELOG.md"),
     python_requires=">=3.0, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*",
     classifiers=[
         "Development Status :: 4 - Beta",
