@@ -30,7 +30,7 @@ jobs:
           add: "src/greynoiselabs/api/**"
   publish:
     needs: build
-    if: github.ref =='refs/heads/main'
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-22.04
     environment:
       name: pypi
