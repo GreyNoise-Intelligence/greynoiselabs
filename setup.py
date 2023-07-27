@@ -10,9 +10,10 @@ def read(fname):
     with open(os.path.join(os.path.dirname(__file__), fname)) as input_file:
         return input_file.read()
 
+
 setup(
     name="greynoiselabs",
-    version="0.1.3",
+    version="0.1.1",
     description="Abstraction to interact with GreyNoise Labs GraphQL API.",
     url="https://api.labs.greynoise.io/",
     author="GreyNoise Intelligence",
