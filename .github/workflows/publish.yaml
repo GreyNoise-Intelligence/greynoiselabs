@@ -1,11 +1,10 @@
 ---
-name: Release
+name: Publish
 on: # yamllint disable-line rule:truthy
   release:
     types: [created]
 jobs:
   publish:
-    if: github.event_name == 'release' && github.event.action == 'created'
     runs-on: ubuntu-22.04
     environment:
       name: pypi
