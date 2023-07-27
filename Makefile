@@ -50,7 +50,10 @@ publish: install
 
 .PHONY: bump
 bump:
+	rm -rf venv
+	python3 -m venv venv
 	. venv/bin/activate
+	venv/bin/pip3 install -r requirements/dev.txt
 	venv/bin/bumpversion --allow-dirty --verbose patch
 
 .PHONY: clean
