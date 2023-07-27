@@ -41,5 +41,5 @@ However, don't fret over this too much. You can also just accumulate commits wit
 Releases
 --------
 
-* Use tags for each Github release.
+* Github actions automatically iterate a `patch` version for all merged PRs which generates a tag and subsequent release. 
 * Avoid checking in large files into the repo. Instead attach files as artifacts to Github releases.
