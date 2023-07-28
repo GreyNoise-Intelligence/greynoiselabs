@@ -61,7 +61,7 @@ publish: install
 	( \
     	source venv/bin/activate; \
     	python3 -m pip install twine; \
-		python3 -m twine upload --username "__token__" --password $(TWINE_PASSWORD) --disable-progress-bar dist/*; \
+		twine upload --username "__token__" --password $(TWINE_PASSWORD) --disable-progress-bar dist/*; \
     )
 
 .PHONY: bump
