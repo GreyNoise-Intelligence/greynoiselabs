@@ -8,10 +8,6 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref }}
       - name: Build Changelog
         id: github_release
         uses: mikepenz/release-changelog-builder-action@v3
