@@ -55,10 +55,19 @@ shell:
 		poetry shell; \
     )
 
+.PHONY: fakepublish
+fakepublish: clean
+	( \
+		poetry config repositories.testpypi https://test.pypi.org/legacy/; \
+		poetry config pypi-token.testpypi $(PYPI_TOKEN); \
+    	poetry publish --build; \
+    )
+
 .PHONY: publish
 publish: clean
 	( \
-		poetry config http-basic.pypi "__token__" "$(PYPI_TOKEN)"; \
+		poetry config repositories.pypi https://pypi.org/legacy/; \
+		poetry config pypi-token.pypi $(PYPI_TOKEN); \
     	poetry publish --build; \
     )
 

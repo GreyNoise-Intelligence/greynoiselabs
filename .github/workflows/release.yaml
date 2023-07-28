@@ -1,38 +1,16 @@
 ---
 name: Release
-on: workflow_dispatch
-jobs:
+on:
   release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GREYNOISELABS_PAT }}
-        with:
-          # yamllint disable rule:line-length
-          configurationJson: |
-            {
-              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
-              "categories": [
-                {
-                    "title": "## 💬 Other",
-                    "labels": ["other"]
-                },
-                {
-                    "title": "## 📦 Dependencies",
-                    "labels": ["dependencies"]
-                }
-              ]
-            }
+    types: [published]
+jobs:
   publish:
     runs-on: ubuntu-22.04
     environment:
       name: pypi
       url: https://pypi.org/p/greynoiselabs
     env:
-      TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+      PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
     steps:
       - uses: actions/checkout@v3
         with:

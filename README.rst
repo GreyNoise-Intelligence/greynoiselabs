@@ -15,8 +15,17 @@ Documentation is available here: `Documentation`_
 
 .. _Documentation: https://api.labs.greynoise.io/1/docs/
 
-Quick Start
-===========
+CLI Quick Start
+===============
+**Install the CLI**:
+
+``python3 -m pip install greynoiselabs``
+
+
+
+
+SDK Quick Start
+===============
 **Install the library**:
 
 ``python3 -m pip install greynoiselabs`` or ``make install`` when in the root directory of the repository.
