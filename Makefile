@@ -2,6 +2,8 @@
 -include .env
 SHELL := /bin/bash
 
+TWINE_PASSWORD := $(TWINE_PASSWORD)
+
 .PHONY: requirements
 requirements:
 	( \
