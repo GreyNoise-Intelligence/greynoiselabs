@@ -20,9 +20,9 @@ repos:
         language: system
         types:
           - python
-      - id: flake8
-        name: Static analysis (flake8)
-        entry: flake8
+      - id: ruff
+        name: Static analysis (ruff)
+        entry: ruff
         language: system
         types:
           - python

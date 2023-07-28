@@ -1,11 +1,11 @@
-====================================
-Python GreyNoise Labs GraphQL Client
-====================================
+==========================================
+Python GreyNoise Labs GraphQL Client & SDK
+==========================================
 
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
     :target: https://opensource.org/licenses/MIT
 
-This is an abstract python library generated from the `GreyNoise Labs API`_ service.
+This is an abstract python client and SDK library generated from the `GreyNoise Labs API`_ service.
 
 .. _GreyNoise Labs API: https://api.labs.greynoise.io/
 
@@ -19,9 +19,12 @@ Quick Start
 ===========
 **Install the library**:
 
-``pip install greynoiselabs`` or ``python setup.py install``
+``python3 -m pip install greynoiselabs`` or ``make install`` when in the root directory of the repository.
 
-Example Code
+Example SDK Code
+
+You can authenticate to the Labs API and obtain a copy of your token there 
+or with the CLI after running `greynoiselabs init`
 
 ..  code-block:: python
 
