@@ -3,7 +3,7 @@
 SHELL := /bin/bash
 
 # Disable echo on the config target to prevent leaking the PYPI_TOKEN
-.SILENT: config
+.SILENT: publish
 
 PYPI_TOKEN := $(PYPI_TOKEN)
 
@@ -55,13 +55,10 @@ shell:
 		poetry shell; \
     )
 
-.PHONY: config
-config: 
-	poetry config http-basic.pypi "__token__" "$(PYPI_TOKEN)"; \
-
 .PHONY: publish
-publish: clean config
+publish: clean
 	( \
+		poetry config http-basic.pypi "__token__" "$(PYPI_TOKEN)"; \
     	poetry publish --build; \
     )
 

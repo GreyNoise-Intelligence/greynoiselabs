@@ -33,9 +33,9 @@ greynoiselabs = "greynoiselabs.cli.main:app"
 
 [tool.poetry.dev-dependencies]
 ariadne-codegen = "0.7.1"
-pre-commit = "3.3.2"
+pre-commit = "3.3.3"
 tox = "4.6.4"
-wheel = "0.36.2"
+wheel = "0.41.0"
 black = [
     { version = "<23.1.0", python = "<3.7" },
     { version = "^23.1.0", python = ">=3.7" },
@@ -63,18 +63,18 @@ yamllint = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-Click = "8.1.3"
+Click = "8.1.6"
 pydantic = "1.10.9"
 httpx = "0.24.1"
 websockets = "11.0.3"
-auth0-python = "4.3.0"
+auth0-python = "4.4.0"
 typer = "0.9.0"
-PyJWT = "2.7.0"
+PyJWT = "2.8.0"
 requests = "2.31.0"
 rich = "13.4.2"
-urllib3 = "1.26.6"
+urllib3 = "2.0.4"
 colorama = "0.4.6"
-wheel = "0.36.2"
+wheel = "0.41.0"
 jsonlines = "3.1.0"
 requests_oauthlib = "1.3.1"
 platformdirs = "3.9.1"
