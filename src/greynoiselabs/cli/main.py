@@ -2,14 +2,16 @@
 
 import asyncio
 import json
-import jsonlines
 import os
+
+import httpx
+import jsonlines
+import typer
+from typing_extensions import Annotated
 
 from greynoiselabs.__version__ import __version__
 from greynoiselabs.api.client import Client
-from greynoiselabs.cli.auth import login, authenticate
-import typer
-from typing_extensions import Annotated
+from greynoiselabs.cli.auth import authenticate, login
 
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", default="greynoise2.auth0.com")
 AUTH0_CLIENT_ID = os.getenv(
@@ -52,8 +54,15 @@ def out(obj, outfile_writer):
 
 
 def new_client(id_token):
+    transport = httpx.AsyncHTTPTransport(retries=1)
     return Client(
-        "https://api.labs.greynoise.io/1/query", {"Authorization": f"Bearer {id_token}"}
+        "https://api.labs.greynoise.io/1/query",
+        {"Authorization": f"Bearer {id_token}"},
+        httpx.AsyncClient(
+            headers={"Authorization": f"Bearer {id_token}"},
+            transport=transport,
+            timeout=30.0,
+        ),
     )
 
 
