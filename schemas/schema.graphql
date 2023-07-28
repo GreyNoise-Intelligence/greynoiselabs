@@ -34,11 +34,12 @@ type Query {
 	topC2s: C2Result!
 	"""
 	Return the top 1% of HTTP requests ranked by pervasiveness GreyNoise has observed over the last 7 days. This data may be up to 4.5 hours old.
-	"""
+	The '/' path has been removed as this is less useful in most contexts.
+  """
   topHTTPRequests: HTTPResult!
 	"""
 	Return the top 1% of IPs searched in GreyNoise ordered by the number of users observed over the last 7 days. This data may be up to 4.5 hours old.
-	and then the number of times it was requested. The '/' path has been removed as this is less useful in most contexts.
+	and then the number of times it was requested.
 	"""
 	topPopularIPs: PopularIPResult!
 	"""
@@ -167,6 +168,12 @@ type PopularIP {
   request_count: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "22314" }])
   """The number of users that requested this IP."""
   users_count: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "475" }])
+  """The last time this IP was requested."""
+  last_requested: Time! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2023-05-11T16:25:04Z" }])
+  """This IP was observed by GreyNoise sensors."""
+  noise: Boolean! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "true" }])
+  """The last time this IP was observed by GreyNoise sensors."""
+  last_seen: Time @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2023-05-11T16:25:04Z" }])
 }
 
 type PopularIPResult {

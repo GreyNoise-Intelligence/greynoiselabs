@@ -4,6 +4,9 @@ query getIPs {
       ip
       request_count
       users_count
+      last_requested
+      noise
+      last_seen
     }
   }
 }

@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
-import time
 import json
 import os
-from requests_oauthlib import OAuth2Session
-from auth0.authentication.token_verifier import (
-    TokenVerifier,
-    AsymmetricSignatureVerifier,
-)
+import time
+
 import jwt
 import requests
 import typer
+from auth0.authentication.token_verifier import (
+    AsymmetricSignatureVerifier,
+    TokenVerifier,
+)
+from requests_oauthlib import OAuth2Session
 
 AUTH0_DOMAIN = "greynoise2.auth0.com"
 AUTH0_CLIENT_ID = "IM8Old6x7WCr2wqVI0Cz3I0c4JPSR1gn"
@@ -20,7 +21,7 @@ ISSUER_URL = f"https://{AUTH0_DOMAIN}/"
 ALGORITHMS = ["RS256"]
 
 
-def get_token_from_file(token_filename):
+def get_token_from_file(token_filename: str):
     """
     Gets the token from a file
     """
@@ -34,7 +35,7 @@ def get_token_from_file(token_filename):
         return None
 
 
-def token_saver(token_filename, token_data):
+def token_saver(token_filename: str, token_data: any):
     """
     Saves the token to a file
     """
@@ -43,12 +44,13 @@ def token_saver(token_filename, token_data):
         os.makedirs(os.path.dirname(fp), exist_ok=True)
         with open(fp, "w+") as f:
             json.dump(token_data, f)
+        print(f"Token saved to {token_filename}.")
     except Exception as ex:
         print(f"Unable to save token to {token_filename}, {ex}")
         raise typer.Abort()
 
 
-def token_refresh(token_filename, token_data_in):
+def token_refresh(token_filename: str, token_data_in: any):
     """
     Refreshes the token
     """
@@ -65,7 +67,7 @@ def token_refresh(token_filename, token_data_in):
         return None
 
 
-def validate_token(id_token):
+def validate_token(id_token: any):
     """
     Verify the token and its precedence
 
@@ -78,8 +80,7 @@ def validate_token(id_token):
     try:
         tv.verify(id_token)
         return True
-    except Exception as ex:
-        print(f"Unable to validate token {ex}.")
+    except Exception:
         return False
 
 
@@ -130,13 +131,14 @@ def init_device_flow():
     return token_data, current_user
 
 
-def authenticate(token_filename):
+def authenticate(config_dir: str):
     """
     Checks for local token and validates it, if invalid, attempts to refresh it.
     """
     global token_data
     global current_user
     validated = False
+    token_filename = os.path.join(config_dir, "token.json")
 
     token_data = get_token_from_file(token_filename)
     if token_data:
@@ -164,7 +166,7 @@ def authenticate(token_filename):
         return None, None
 
 
-def login(token_filename):
+def login(config_dir: str):
     """
     Runs the device authorization flow and stores the user object in memory
     """
@@ -172,6 +174,8 @@ def login(token_filename):
     global token_data
     global current_user
     validated = False
+    token_filename = os.path.join(config_dir, "token.json")
+
     token_data, current_user = init_device_flow()
     token_saver(token_filename, token_data)
     validated = validate_token(token_data["id_token"])

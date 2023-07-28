@@ -1,5 +1,5 @@
-query generateGNQL($input: String!) {
-  generateGNQL(input: $input) {
+query generateGNQL($input_text: String!) {
+  generateGNQL(input_text: $input_text) {
     input_text
     queries
   }
