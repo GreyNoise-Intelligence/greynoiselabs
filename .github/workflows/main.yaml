@@ -4,8 +4,6 @@ on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
   pull_request:
     branches:
       - main
@@ -16,6 +14,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@master
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
       - name: Lint
         run: make lint
   build:
@@ -27,15 +29,12 @@ jobs:
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
       - name: Build
         run: make build
-      - name: Bump version
-        run: make bump
-      - name: Commit changes
-        uses: EndBug/add-and-commit@v9
-        with:
-          default_author: github_actions
-          message: "Add build and bump changes {Github Actions}"
   tag:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -43,12 +42,16 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: "0"
-      - name: Write release version
-        run: |
-          CUSTOM_TAG=$(cat .bumpversion.cfg | grep "current_version =" | cut -d' ' -f3)
-          echo Version: v$CUSTOM_TAG
-          echo "CUSTOM_TAG=v$CUSTOM_TAG" >> $GITHUB_ENV
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@master
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
+      - name: Bump version and generate tag
+        run: make bump
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          message: "Add build and bump changes {Github Actions}"
         env:
           GITHUB_TOKEN: ${{ secrets.GREYNOISELABS_PAT }}

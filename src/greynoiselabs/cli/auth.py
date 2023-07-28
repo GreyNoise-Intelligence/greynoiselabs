@@ -30,8 +30,7 @@ def get_token_from_file(token_filename: str):
         with open(fp, "r") as f:
             token_data = json.load(f)
             return token_data
-    except Exception as ex:
-        print(f"Unable to load token from {token_filename}, {ex}")
+    except Exception:
         return None
 
 

@@ -2,79 +2,77 @@
 -include .env
 SHELL := /bin/bash
 
-TWINE_PASSWORD := $(TWINE_PASSWORD)
+# Disable echo on the config target to prevent leaking the PYPI_TOKEN
+.SILENT: config
 
-.PHONY: requirements
-requirements:
-	( \
-    	rm -rf venv; \
-		python3 -m venv venv; \
-		source venv/bin/activate; \
-		venv/bin/python3 -m pip install -r requirements/dev.txt; \
-    )
+PYPI_TOKEN := $(PYPI_TOKEN)
 
 .PHONY: lint
-lint: requirements
+lint: clean
 	( \
-    	source venv/bin/activate; \
-    	yamllint .; \
-		black --check src ; \
-		isort --check-only src/**/*.py; \
-		rst-lint *.rst; \
-		ruff check src; \
+		poetry install; \
+    	poetry run yamllint .; \
+		poetry run black --check src ; \
+		poetry run isort --check-only src/**/*.py; \
+		poetry run rst-lint *.rst; \
+		poetry run ruff check src; \
     )
 
 .PHONY: lint-fix
-lint-fix: requirements
+lint-fix: clean
 	( \
-    	source venv/bin/activate; \
-    	yamllint .; \
-		black src; \
-		isort src/**/*.py; \
-		rst-lint *.rst; \
-		ruff check --fix src; \
+		poetry install; \
+    	poetry run yamllint .; \
+		poetry run black src; \
+		poetry run isort src/**/*.py; \
+		poetry run rst-lint *.rst; \
+		poetry run ruff check --fix src; \
     )
 
 .PHONY: build
-build: clean requirements
+build: clean
 	( \
-    	source venv/bin/activate; \
-    	ariadne-codegen --config ariadne.toml; \
-		black src; \
-		isort src/**/*.py; \
-		docker build .; \
+		poetry install; \
+    	poetry run ariadne-codegen --config ariadne.toml; \
+		poetry run yamllint .; \
+		poetry run black src; \
+		poetry run isort src/**/*.py; \
+		poetry run rst-lint *.rst; \
+		poetry run ruff check --fix src; \
+		poetry build; \
+		docker build -t greynoiselabs-cli .; \
     )
 
 .PHONY: install
 install:
 	( \
-		rm -rf venv; \
-		python3 -m venv venv; \
-    	source venv/bin/activate; \
-		python3 -m pip install -r requirements/common.txt; \
-		python3 setup.py sdist bdist_wheel; \
-		python3 -m pip install --force-reinstall dist/*.whl; \
+		poetry run pip install dist/*.whl; \
     )
 
-.PHONY: publish
-publish: install
+.PHONY: shell
+shell:
 	( \
-    	source venv/bin/activate; \
-    	python3 -m pip install twine; \
-		twine upload --username "__token__" --password $(TWINE_PASSWORD) --disable-progress-bar dist/*; \
+		poetry shell; \
+    )
+
+.PHONY: config
+config: 
+	poetry config http-basic.pypi "__token__" "$(PYPI_TOKEN)"; \
+
+.PHONY: publish
+publish: clean config
+	( \
+    	poetry publish --build; \
     )
 
 .PHONY: bump
-bump:
+bump: clean
 	( \
-    	rm -rf venv; \
-    	python3 -m venv venv; \
-		source venv/bin/activate; \
-		python3 -m pip install -r requirements/dev.txt; \
-		bumpversion --allow-dirty --verbose patch; \
+    	poetry version patch; \
     )
 
 .PHONY: clean
 clean:
-	rm -rf build dist
-	rm -rf venv
+	poetry env remove --all
+	rm -rf dist
+	python3 -m pip uninstall greynoiselabs

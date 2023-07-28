@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import asyncio
+import importlib.metadata
 import json
 import os
 
@@ -10,7 +11,6 @@ import typer
 from platformdirs import PlatformDirs
 from typing_extensions import Annotated
 
-from greynoiselabs.__version__ import __version__
 from greynoiselabs.api.client import Client
 from greynoiselabs.cli.auth import authenticate, login
 
@@ -24,13 +24,22 @@ current_user = None
 token_data = None
 client = None
 
+
+def get_version():
+    try:
+        version = importlib.metadata.version("greynoiselabs")
+    except importlib.metadata.PackageNotFoundError:
+        version = None
+    return version
+
+
 config_dir = typer.Option(
     "--config",
     "-c",
     help="Output directory for CLI config.",
     show_default=True,
     default_factory=PlatformDirs(
-        "greynoiselabs", "greynoise", version=__version__
+        "greynoiselabs", "greynoise", version=get_version()
     ).user_config_dir,
 )
 token = typer.Option(
@@ -68,7 +77,7 @@ def initOutfile(outfile: str):
 
 def init_conf_dir(config_dir: str):
     try:
-        dirs = PlatformDirs("greynoiselabs", "greynoise", version=__version__)
+        dirs = PlatformDirs("greynoiselabs", "greynoise", version=get_version())
         if config_dir != "":
             config_dir = os.path.expanduser(config_dir)
             os.makedirs(config_dir, exist_ok=True)
@@ -123,7 +132,7 @@ def version():
     """
     Return the version of the GreyNoise Labs CLI.
     """
-    print(__version__)
+    print(get_version())
 
 
 @app.command()
