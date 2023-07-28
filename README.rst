@@ -5,13 +5,22 @@ Python GreyNoise Labs GraphQL Client & SDK
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
     :target: https://opensource.org/licenses/MIT
 
-This is an abstract python client and SDK library generated from the `GreyNoise Labs API`_ service.
+This package provides a CLI and SDK to the `GreyNoise Labs API`_ service.
 
 .. _GreyNoise Labs API: https://api.labs.greynoise.io/
 
+The GreyNoise Labs API provides access to the GreyNoise sensor datasets,
+including the raw sensor data, contextual metadata, and rapid prototyping utilities from the GreyNoise Labs team.
+
+You can read more about the team and their work at `GreyNoise Labs`_
+
+.. _GreyNoise Labs: https://www.labs.greynoise.io
+
 Documentation
 =============
-Documentation is available here: `Documentation <https://api.labs.greynoise.io/1/docs/>_.`
+Documentation is available here: `Documentation`_
+
+.. _Documentation: https://api.labs.greynoise.io/1/docs
 
 CLI Install
 ===========
