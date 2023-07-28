@@ -10,6 +10,7 @@ PYPI_TOKEN := $(PYPI_TOKEN)
 .PHONY: lint
 lint: clean
 	( \
+		poetry install --only dev-dependencies; \
     	poetry run yamllint .; \
 		poetry run black --check src ; \
 		poetry run isort --check-only src/**/*.py; \
@@ -20,6 +21,7 @@ lint: clean
 .PHONY: lint-fix
 lint-fix: clean
 	( \
+		poetry install --only dev-dependencies; \
     	poetry run yamllint .; \
 		poetry run black src; \
 		poetry run isort src/**/*.py; \
@@ -30,6 +32,7 @@ lint-fix: clean
 .PHONY: build
 build: clean
 	( \
+		poetry install --only dev-dependencies; \
     	poetry run ariadne-codegen --config ariadne.toml; \
 		poetry run yamllint .; \
 		poetry run black src; \
