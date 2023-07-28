@@ -7,8 +7,6 @@ on: # yamllint disable-line rule:truthy
   pull_request:
     branches:
       - main
-  release:
-    types: [created]
 jobs:
   lint:
     runs-on: ubuntu-22.04
@@ -48,10 +46,13 @@ jobs:
           version: 1.5.1
       - name: Bump version and generate tag
         run: make bump
+      - name: Get version
+        run: echo "VERSION=$(poetry version -s)" >> $GITHUB_ENV
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
         with:
           default_author: github_actions
           message: "Add build and bump changes {Github Actions}"
+          tag: "v${{ env.VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GREYNOISELABS_PAT }}
