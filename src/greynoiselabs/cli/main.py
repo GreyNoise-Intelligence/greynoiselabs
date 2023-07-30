@@ -183,6 +183,41 @@ def c2s(output: Annotated[str, output], config_dir: Annotated[str, config_dir]):
 
 
 @app.command()
+def http_requests(
+    output: Annotated[str, output], config_dir: Annotated[str, config_dir]
+):
+    """
+    Return the top 1% of HTTP requests ranked by pervasiveness.
+    This is for requestsover the last 7 days.
+    This data may be up to 4.5 hours old.
+    The '/' path has been removed.
+    """
+    init(config_dir)
+    writer = initOutfile(output)
+    response = asyncio.run(client.get_requests())
+    for request in response.top_h_t_t_p_requests.http_requests:
+        out(request, writer)
+    if writer:
+        writer.close()
+
+
+@app.command()
+def payloads(output: Annotated[str, output], config_dir: Annotated[str, config_dir]):
+    """
+    Return the top 1% of observed payloads ranked by pervasiveness
+    This is for payloads over the last 7 days.
+    This data may be up to 4.5 hours old.
+    """
+    init(config_dir)
+    writer = initOutfile(output)
+    response = asyncio.run(client.get_payloads())
+    for payload in response.top_payloads.payloads:
+        out(payload, writer)
+    if writer:
+        writer.close()
+
+
+@app.command()
 def knocks(
     ip: Annotated[str, ip],
     output: Annotated[str, output],

@@ -37,6 +37,10 @@ type Query {
 	The '/' path has been removed as this is less useful in most contexts.
   """
   topHTTPRequests: HTTPResult!
+  """
+	Return the top 1% of payloads ranked by pervasiveness GreyNoise has observed over the last 7 days. This data may be up to 4.5 hours old.
+  """
+  topPayloads: PayloadResult!
 	"""
 	Return the top 1% of IPs searched in GreyNoise ordered by the number of users observed over the last 7 days. This data may be up to 4.5 hours old.
 	and then the number of times it was requested.
@@ -110,6 +114,33 @@ type HTTPRequest {
 type HTTPResult {
   queryInfo: QueryInfo!
   httpRequests: [HTTPRequest!]! 
+}
+
+#### Payload ####
+
+type Payload {
+  """The total number of source IPs that sent this HTTP request."""
+  source_ip_count: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "10" }])
+  """The total number of times GreyNoise observed this HTTP request."""
+  request_count: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "1949" }])
+  """
+  A score from 0 - 100 that indicates how widespread this payload was across the internet. 
+  A score of 0 indicates that less than 1% of they GreyNoise fleet saw this specific payload.
+  """
+  pervasiveness: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "98" }])
+  """The transport layer protcol observed.."""
+  protocol: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "TCP" }])
+  """The size of the payload in bytes."""
+  size: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "56" }])
+  """The first 1kb of the observed payload as UTF-8 escaped."""
+  payload: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "GET /nice%20ports%2C/Tri%6Eity.txt%2ebak HTTP/1.0 Connection: close" }])
+  """The first 1kb of the observed payload as base64 of the raw binary."""
+  payload_b64: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "R0VUIC9uaWNlJTIwcG9ydHMlMkMvVHJpJTZFaXR5LnR4dCUyZWJhayBIVFRQLzEuMA0KQ29ubmVjdGlvbjogY2xvc2UNCg0K" }])
+}
+
+type PayloadResult {
+  queryInfo: QueryInfo!
+  payloads: [Payload!]! 
 }
 
 #### Knockknock ####

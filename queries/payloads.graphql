@@ -1,0 +1,13 @@
+query getPayloads {
+  topPayloads {
+    payloads {
+      protocol
+      size
+      payload
+      payload_b64
+      request_count
+      source_ip_count
+      pervasiveness
+    }
+  }
+}
