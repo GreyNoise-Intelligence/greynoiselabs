@@ -12,6 +12,7 @@ from platformdirs import PlatformDirs
 from typing_extensions import Annotated
 
 from greynoiselabs.api.client import Client
+from greynoiselabs.api.exceptions import GraphQLClientGraphQLMultiError
 from greynoiselabs.cli.auth import authenticate, login
 
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", default="greynoise2.auth0.com")
@@ -19,6 +20,8 @@ AUTH0_CLIENT_ID = os.getenv(
     "AUTH0_CLIENT_ID", default="IM8Old6x7WCr2wqVI0Cz3I0c4JPSR1gn"
 )
 ALGORITHMS = ["RS256"]
+
+NOT_READY_MSG = "not available"
 
 current_user = None
 token_data = None
@@ -170,14 +173,29 @@ def init(
 @app.command()
 def c2s(output: Annotated[str, output], config_dir: Annotated[str, config_dir]):
     """
-    Return the top 1% of C2s ranked by pervasiveness.
-    This data may be up to 4.5 hours old but covers the previous 24 hours.
+    Return the top 10% of C2s ranked by pervasiveness.
+    This data may be up to 4 hours old but covers the previous day.
     """
     init(config_dir)
     writer = initOutfile(output)
-    response = asyncio.run(client.get_c2s())
-    for c2 in response.top_c2s.c2s:
-        out(c2, writer)
+    try:
+        response = asyncio.run(client.get_c2s())
+        if len(response.top_c2s.c2s) == 0:
+            print("no results found.")
+        for c2 in response.top_c2s.c2s:
+            out(c2, writer)
+    except GraphQLClientGraphQLMultiError as ex:
+        if NOT_READY_MSG in str(ex):
+            print(
+                "Labs API data refresh in progress, please try again in a few minutes."
+            )
+            raise typer.Abort()
+        else:
+            print(f"unable to get C2s: {ex}")
+            raise typer.Abort()
+    except Exception as ex:
+        print(f"unable to get C2s: {ex}")
+        raise typer.Abort()
     if writer:
         writer.close()
 
@@ -189,14 +207,29 @@ def http_requests(
     """
     Return the top 1% of HTTP requests ranked by pervasiveness.
     This is for requestsover the last 7 days.
-    This data may be up to 4.5 hours old.
+    This data may be up to 4 hours old.
     The '/' path has been removed.
     """
     init(config_dir)
     writer = initOutfile(output)
-    response = asyncio.run(client.get_requests())
-    for request in response.top_h_t_t_p_requests.http_requests:
-        out(request, writer)
+    try:
+        response = asyncio.run(client.get_requests())
+        if len(response.top_h_t_t_p_requests.http_requests) == 0:
+            print("no results found.")
+        for request in response.top_h_t_t_p_requests.http_requests:
+            out(request, writer)
+    except GraphQLClientGraphQLMultiError as ex:
+        if NOT_READY_MSG in str(ex):
+            print(
+                "Labs API data refresh in progress, please try again in a few minutes."
+            )
+            raise typer.Abort()
+        else:
+            print(f"unable to get HTTP requests: {ex}")
+            raise typer.Abort()
+    except Exception as ex:
+        print(f"unable to get HTTP requests: {ex}")
+        raise typer.Abort()
     if writer:
         writer.close()
 
@@ -206,13 +239,28 @@ def payloads(output: Annotated[str, output], config_dir: Annotated[str, config_d
     """
     Return the top 1% of observed payloads ranked by pervasiveness
     This is for payloads over the last 7 days.
-    This data may be up to 4.5 hours old.
+    This data may be up to 4 hours old.
     """
     init(config_dir)
     writer = initOutfile(output)
-    response = asyncio.run(client.get_payloads())
-    for payload in response.top_payloads.payloads:
-        out(payload, writer)
+    try:
+        response = asyncio.run(client.get_payloads())
+        if len(response.top_payloads.payloads) == 0:
+            print("no results found.")
+        for payload in response.top_payloads.payloads:
+            out(payload, writer)
+    except GraphQLClientGraphQLMultiError as ex:
+        if NOT_READY_MSG in str(ex):
+            print(
+                "Labs API data refresh in progress, please try again in a few minutes."
+            )
+            raise typer.Abort()
+        else:
+            print(f"unable to get payloads: {ex}")
+            raise typer.Abort()
+    except Exception as ex:
+        print(f"unable to get payloads: {ex}")
+        raise typer.Abort()
     if writer:
         writer.close()
 
@@ -231,9 +279,24 @@ def knocks(
     """
     init(config_dir)
     writer = initOutfile(output)
-    response = asyncio.run(client.get_knocks(ip))
-    for knock in response.top_knocks.knock:
-        out(knock, writer)
+    try:
+        response = asyncio.run(client.get_knocks(ip))
+        if len(response.top_knocks.knock) == 0:
+            print("no results found.")
+        for knock in response.top_knocks.knock:
+            out(knock, writer)
+    except GraphQLClientGraphQLMultiError as ex:
+        if NOT_READY_MSG in str(ex):
+            print(
+                "Labs API data refresh in progress, please try again in a few minutes."
+            )
+            raise typer.Abort()
+        else:
+            print(f"unable to get knocks: {ex}")
+            raise typer.Abort()
+    except Exception as ex:
+        print(f"unable to get knocks: {ex}")
+        raise typer.Abort()
     if writer:
         writer.close()
 
@@ -249,9 +312,24 @@ def popular_ips(output: Annotated[str, output], config_dir: Annotated[str, confi
     """
     init(config_dir)
     writer = initOutfile(output)
-    response = asyncio.run(client.get_i_ps())
-    for ip in response.top_popular_i_ps.popular_i_ps:
-        out(ip, writer)
+    try:
+        response = asyncio.run(client.get_i_ps())
+        if len(response.top_popular_i_ps.popular_i_ps) == 0:
+            print("no results found.")
+        for ip in response.top_popular_i_ps.popular_i_ps:
+            out(ip, writer)
+    except GraphQLClientGraphQLMultiError as ex:
+        if NOT_READY_MSG in str(ex):
+            print(
+                "Labs API data refresh in progress, please try again in a few minutes."
+            )
+            raise typer.Abort()
+        else:
+            print(f"unable to get IPs: {ex}")
+            raise typer.Abort()
+    except Exception as ex:
+        print(f"unable to get IPs: {ex}")
+        raise typer.Abort()
     if writer:
         writer.close()
 
@@ -269,9 +347,24 @@ def noise_rank(
     """
     init(config_dir)
     writer = initOutfile(output)
-    response = asyncio.run(client.get_noise_ranks(ip))
-    for ip in response.noise_rank.ips:
-        out(ip, writer)
+    try:
+        response = asyncio.run(client.get_noise_ranks(ip))
+        if len(response.noise_rank.ips) == 0:
+            print("no results found.")
+        for ip in response.noise_rank.ips:
+            out(ip, writer)
+    except GraphQLClientGraphQLMultiError as ex:
+        if NOT_READY_MSG in str(ex):
+            print(
+                "Labs API data refresh in progress, please try again in a few minutes."
+            )
+            raise typer.Abort()
+        else:
+            print(f"unable to get noise rank: {ex}")
+            raise typer.Abort()
+    except Exception as ex:
+        print(f"unable to get noise rank: {ex}")
+        raise typer.Abort()
     if writer:
         writer.close()
 
@@ -287,9 +380,19 @@ def gengnql(
     """
     init(config_dir)
     writer = initOutfile(output)
-    response = asyncio.run(client.generate_g_n_q_l(input))
-    for query in response.generate_g_n_q_l.queries:
-        out(query, writer)
+    try:
+        response = asyncio.run(client.generate_g_n_q_l(input))
+        if len(response.generate_g_n_q_l.queries) == 0:
+            print("no results found.")
+        for query in response.generate_g_n_q_l.queries:
+            out(query, writer)
+    except Exception:
+        print(
+            """unable to generate GNQL, please try again.
+an error occured while processing your request.
+"""
+        )
+        raise typer.Abort()
     if writer:
         writer.close()
 
