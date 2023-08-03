@@ -34,33 +34,18 @@ ariadne-codegen = "0.7.1"
 pre-commit = "3.3.3"
 tox = "4.6.4"
 wheel = "0.41.0"
-black = [
-    { version = "<23.1.0", python = "<3.7" },
-    { version = "^23.1.0", python = ">=3.7" },
-]
-ruff = { version = "^0.0.280", python = ">=3.6" }
-isort = [
-    { version = "<5.12.0", python = "<3.8" },
-    { version = "^5.12.0", python = ">=3.8" },
-]
-mock = { version = "^5.0.1", python = ">=3.6" }
-pylint = [
-    { version = "<2.16.2", python = "==3.6" },
-    { version = "^2.17.4", python = ">=3.7" },
-]
-pytest-cov = { version = "^4.0.0", python = ">=3.6" }
-pytest = [
-    { version = "^7.0.1", python = "==3.6" },
-    { version = "^7.3.0", python = ">=3.7" },
-]
+black = "^23.1.0"
+ruff = "0.0.280"
+isort = "^5.12.0"
+mock = "^5.0.1"
+pylint = "^2.17.4"
+pytest-cov = "^4.0.0"
+pytest = "^7.3.0"
 restructuredtext-lint = "^1.4.0"
-yamllint = [
-    { version = "^1.28.0", python = "==3.6" },
-    { version = "^1.29.0", python = ">=3.7" },
-]
+yamllint = "^1.29.0"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<4"
 Click = "8.1.6"
 pydantic = "1.10.9"
 httpx = "0.24.1"
