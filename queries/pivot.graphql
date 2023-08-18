@@ -1,0 +1,29 @@
+query getPivot($pcap: Upload!) {
+  pivot(input: {file: $pcap, gnql: true, reverse: false}) {
+    ... on GNQLResult {
+      queries {
+        type
+        urls
+      }
+    }
+    ... on PCAPResponse {
+      id
+      ips {
+        key
+        value {
+          firstSeen
+          hassh
+          hostnames
+          ja3
+          lastSeen
+          paths
+          portCounts {
+            count
+            port
+          }
+          userAgents
+        }
+      }
+    }
+  }
+}
