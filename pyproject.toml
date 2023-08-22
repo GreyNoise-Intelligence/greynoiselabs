@@ -30,7 +30,7 @@ classifiers = [
 greynoiselabs = "greynoiselabs.cli.main:app"
 
 [tool.poetry.dev-dependencies]
-ariadne-codegen = "0.7.1"
+ariadne-codegen = "0.8.0"
 pre-commit = "3.3.3"
 tox = "4.6.4"
 wheel = "0.41.0"
@@ -47,7 +47,7 @@ yamllint = "^1.29.0"
 [tool.poetry.dependencies]
 python = ">=3.9,<4"
 Click = "8.1.6"
-pydantic = "1.10.9"
+pydantic = "2.0.0,<3.0.0"
 httpx = "0.24.1"
 websockets = "11.0.3"
 auth0-python = "4.4.0"
