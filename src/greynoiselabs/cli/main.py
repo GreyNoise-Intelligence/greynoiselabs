@@ -58,22 +58,12 @@ output = typer.Option(
 ip = typer.Argument(
     help="Specify the IP to retrieve.", show_default=False, default_factory=lambda: ""
 )
-pcapfile = typer.Argument(
-    help="Specify the PCAP file to submit for processing.",
-    show_default=False,
-    default_factory=lambda: "",
-)
 input: typer.Argument(
     help="Specify the input text to translate.",
     show_default=False,
     default_factory=lambda: "",
 )
-
-app = typer.Typer(
-    no_args_is_help=True,
-    pretty_exceptions_enable=False,
-    help="This command provides a CLI to the experimental GreyNoise Labs APIs",
-)
+app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
 
 
 def initOutfile(outfile: str):
@@ -403,59 +393,6 @@ an error occured while processing your request.
 """
         )
         raise typer.Abort()
-    if writer:
-        writer.close()
-
-
-@app.command()
-def pcap(
-    pcapfile: Annotated[str, pcapfile],
-    output: Annotated[str, output],
-    config_dir: Annotated[str, config_dir],
-    gnql: Annotated[
-        bool, typer.Option("--gnql", "-g", help="Return GNQL generated queries.")
-    ] = False,
-    reverse: Annotated[
-        bool,
-        typer.Option(
-            "--reverse",
-            "-r",
-            help="Reverse the Source/Destination of PCAP capture extraction.",
-        ),
-    ] = False,
-):
-    """
-    Parse the submitted PCAP file and output interesting metadata or
-    optionally convert to GNQL queries.
-    """
-    init(config_dir)
-    writer = initOutfile(output)
-    # try:
-    file = open(pcapfile, "rb")
-    fileobj = {}
-    fileobj["filename"] = pcapfile
-    fileobj["content"] = file
-    fileobj["content_type"] = "multipart/form-data"
-
-    upload = {pcapfile: fileobj}
-
-    response = asyncio.run(client.get_pivot(upload, gnql, reverse))
-    file.close()
-    if len(response.pivot) == 0:
-        print("no results found.")
-    out(response.pivot, writer)
-    # except GraphQLClientGraphQLMultiError as ex:
-    #    if NOT_READY_MSG in str(ex):
-    #        print(
-    #            "Labs API data refresh in progress, please try again in a few minutes."
-    #        )
-    #        raise typer.Abort()
-    #    else:
-    #        print(f"unable to get pcap: {ex}")
-    #        raise typer.Abort()
-    # except Exception as ex:
-    #    print(f"unable to get pcap info: {ex}")
-    #    raise typer.Abort()
     if writer:
         writer.close()
 
