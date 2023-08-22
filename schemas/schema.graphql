@@ -60,10 +60,6 @@ type Query {
   This endpoint also supports a single IP as input to pull it's specific noise rank information.
 	"""
 	noiseRank(ip: String): NoiseRankResult!
-  """
-	Convert the supplied PCAP file into either extracted metadata OR GNQL queries
-	"""
-  pivot(input: PivotInput!): PivotResult!
 }
 
 #### C2 ####
@@ -240,61 +236,4 @@ type NoiseRankResult {
   ips: [NoiseRank!]! 
 }
 
-#### Pivot ####
-type GNQLQuery {
-    type: String!
-    urls: [String!]!
-}
-
-type GNQLResult {
-    queries: [GNQLQuery!]!
-}
-
-input PivotInput {
-  file: Upload!
-  gnql: Boolean!
-  reverse: Boolean!
-}
-
-type PivotIP {
-  """The first time this IP was observed in the PCAP."""
-  firstSeen: Time! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2006-01-02T15:04:05.999999-0700" }])
-  """The last time this IP was observed in the PCAP."""
-  lastSeen: Time! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2006-01-02T15:04:05.999999-0700" }])
-  """The number of times this IP sent packets to each TCP or UDP port."""
-  portCounts: [PortCount!]!
-  """The unique list of HTTP request paths that were observed in the PCAP."""
-  paths: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"/filestreamingservice/files/2132f61f-f790-4ae6-a355-8cf9a1533800\",\n        \"/filestreamingservice/files/d6dac2cd-b55a-4a7d-aeb4-1cff97bb9dd4\",\n        \"/filestreamingservice/files/b22f5f18-f7ea-4290-929d-b13c03908334\"\n]" }])
-  """The unique list of HTTP user agent headers that were observed in the PCAP."""
-  userAgents: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.22621.963\"]" }])
-  """The unique list of JA3 signatures that were observed in the PCAP."""
-  ja3: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"3c293bdf2a25c07559b560ba86debc77\"]" }])
-  """The unique list of HASSH signatures that were observed in the PCAP."""
-  hassh: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"b5752e36ba6c5979a575e43178908adf\"]" }])
-  """The unique list of hostnames that were observed in the PCAP. 
-     These include names from DNS queries, SNI, and HTTP requests.
-  """
-  hostnames: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"example.com\"]" }])
-}
-
-type PortCount {
-  """The port to which packets were sent."""
-  port: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "80/TCP" }])
-  """The number of packets sent to the port."""
-  count: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "140" }])
-}
-
-type PCAPResponse {
-  id: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "741912a3-8f19-4004-a089-35c7c5f8bbf2" }])
-  ips: [PivotIPMap!]!
-}
-
-type PivotIPMap {
-  key: String!
-  value: PivotIP!
-}
-
-union PivotResult = GNQLResult | PCAPResponse
-
 scalar Time
-scalar Upload

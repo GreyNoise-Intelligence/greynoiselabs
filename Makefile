@@ -50,7 +50,7 @@ install:
     )
 
 .PHONY: shell
-shell:
+shell: build install
 	( \
 		poetry shell; \
     )
