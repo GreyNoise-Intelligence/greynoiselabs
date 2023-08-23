@@ -20,7 +20,7 @@ jobs:
         run: make test
   build:
     if: github.event_name == 'pull_request'
-    needs: lint
+    needs: test
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -34,6 +34,7 @@ jobs:
       - name: Build
         run: make build
   publish:
+    needs: build
     runs-on: ubuntu-22.04
     environment:
       name: pypi
