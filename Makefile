@@ -33,7 +33,7 @@ lint-fix: clean
 build: clean
 	( \
 		poetry install; \
-    	poetry run ariadne-codegen --config ariadne.toml; \
+    	poetry run ariadne-codegen; \
 		poetry run yamllint .; \
 		poetry run black src; \
 		poetry run isort src/**/*.py; \

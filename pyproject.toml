@@ -20,6 +20,8 @@ classifiers = [
     "Natural Language :: English",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -31,12 +33,12 @@ greynoiselabs = "greynoiselabs.cli.main:app"
 
 [tool.poetry.dev-dependencies]
 ariadne-codegen = "0.8.0"
-pre-commit = "3.3.3"
+pre-commit = "2.20.0"
 tox = "4.6.4"
 wheel = "0.41.0"
 black = "^23.1.0"
 ruff = "0.0.280"
-isort = "^5.12.0"
+isort = "5.8.0"
 mock = "^5.0.1"
 pylint = "^2.17.4"
 pytest-cov = "^4.0.0"
@@ -45,19 +47,26 @@ restructuredtext-lint = "^1.4.0"
 yamllint = "^1.29.0"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4"
-Click = "8.1.6"
+python = ">=3.7.2,<4"
+Click = "8.1.7"
 pydantic = "2.0.0,<3.0.0"
 httpx = "0.24.1"
 websockets = "11.0.3"
 auth0-python = "4.4.0"
 typer = "0.9.0"
-PyJWT = "2.8.0"
+PyJWT = "2.7.0"
+requests-oauthlib = "1.3.1"
 requests = "2.31.0"
 rich = "13.4.2"
 urllib3 = "2.0.4"
 colorama = "0.4.6"
 jsonlines = "3.1.0"
-requests_oauthlib = "1.3.1"
 platformdirs = "3.9.1"
 merge_args = "0.1.5"
+
+[tool.ariadne-codegen]
+schema_path = "schemas/schema.graphql"
+queries_path = "queries"
+target_package_name = "api"
+target_package_path = "src/greynoiselabs"
+convert_to_snake_case = "false"
