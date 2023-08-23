@@ -20,7 +20,6 @@ classifiers = [
     "Natural Language :: English",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -47,7 +46,7 @@ restructuredtext-lint = "^1.4.0"
 yamllint = "^1.29.0"
 
 [tool.poetry.dependencies]
-python = ">=3.7.2,<4"
+python = ">=3.8,<4"
 Click = "8.1.7"
 pydantic = "2.0.0,<3.0.0"
 httpx = "0.24.1"
