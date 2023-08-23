@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "greynoiselabs"
-version = "0.1.25"
+version = "0.1.26"
 description = "Abstraction to interact with GreyNoise Labs GraphQL API."
 authors = ["GreyNoise Intelligence <labs@greynoise.io>"]
 license = "MIT"
