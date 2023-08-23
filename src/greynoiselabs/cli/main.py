@@ -4,12 +4,12 @@ import asyncio
 import importlib.metadata
 import json
 import os
+from typing import Annotated
 
 import httpx
 import jsonlines
 import typer
 from platformdirs import PlatformDirs
-from typing_extensions import Annotated
 
 from greynoiselabs.api.client import Client
 from greynoiselabs.api.exceptions import GraphQLClientGraphQLMultiError
@@ -44,9 +44,6 @@ config_dir = typer.Option(
     default_factory=PlatformDirs(
         "greynoiselabs", "greynoise", version=get_version()
     ).user_config_dir,
-)
-token = typer.Option(
-    "--token", "-t", envvar="GNL_TOKEN", help="HTTP JWT auth bearer token."
 )
 output = typer.Option(
     "--output",

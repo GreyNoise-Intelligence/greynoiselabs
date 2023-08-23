@@ -7,40 +7,19 @@ SHELL := /bin/bash
 
 PYPI_TOKEN := $(PYPI_TOKEN)
 
-.PHONY: lint
-lint: clean
-	( \
-		poetry install; \
-    	poetry run yamllint .; \
-		poetry run black --check src ; \
-		poetry run isort --check-only src/**/*.py; \
-		poetry run rst-lint *.rst; \
-		poetry run ruff check src; \
-    )
+.PHONY: test 
+test: clean
+	tox -p auto -v
 
-.PHONY: lint-fix
-lint-fix: clean
-	( \
-		poetry install; \
-    	poetry run yamllint .; \
-		poetry run black src; \
-		poetry run isort src/**/*.py; \
-		poetry run rst-lint *.rst; \
-		poetry run ruff check --fix src; \
-    )
+.PHONY: lint
+lint:
+	tox -e lint -p auto -v
 
 .PHONY: build
 build: clean
 	( \
 		poetry install; \
-    	poetry run ariadne-codegen; \
-		poetry run yamllint .; \
-		poetry run black src; \
-		poetry run isort src/**/*.py; \
-		poetry run rst-lint *.rst; \
-		poetry run ruff check --fix src; \
 		poetry build; \
-		docker build -t greynoiselabs-cli .; \
     )
 
 .PHONY: install
@@ -81,4 +60,5 @@ bump: clean
 clean:
 	poetry env remove --all
 	rm -rf dist
-	python3 -m pip uninstall greynoiselabs
+	rm -rf ~/.local/share/virtualenv/py_info/
+	rm -rf .tox

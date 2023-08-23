@@ -20,7 +20,6 @@ classifiers = [
     "Natural Language :: English",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -33,7 +32,7 @@ greynoiselabs = "greynoiselabs.cli.main:app"
 [tool.poetry.dev-dependencies]
 ariadne-codegen = "0.8.0"
 pre-commit = "2.20.0"
-tox = "4.6.4"
+tox = "3.28.0"
 wheel = "0.41.0"
 black = "^23.1.0"
 ruff = "0.0.280"
@@ -42,13 +41,14 @@ mock = "^5.0.1"
 pylint = "^2.17.4"
 pytest-cov = "^4.0.0"
 pytest = "^7.3.0"
+pytest-mock = "^3.11.1"
 restructuredtext-lint = "^1.4.0"
+tox-poetry-installer = "^0.10.3"
 yamllint = "^1.29.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
-Click = "8.1.7"
-pydantic = "2.0.0,<3.0.0"
+pydantic = "2.2.1"
 httpx = "0.24.1"
 websockets = "11.0.3"
 auth0-python = "4.4.0"
@@ -69,3 +69,8 @@ queries_path = "queries"
 target_package_name = "api"
 target_package_path = "src/greynoiselabs"
 convert_to_snake_case = "false"
+
+[tool.pytest.ini_options]
+addopts = "-ra -q"
+testpaths = ["tests"]
+junit_family = "xunit1"
