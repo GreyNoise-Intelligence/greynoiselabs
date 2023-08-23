@@ -7,12 +7,16 @@ SHELL := /bin/bash
 
 PYPI_TOKEN := $(PYPI_TOKEN)
 
+.PHONY: deps 
+deps:
+	python3 -m pip install tox
+
 .PHONY: test 
-test: clean
+test: clean deps
 	tox -p auto -v
 
 .PHONY: lint
-lint:
+lint: deps
 	tox -e lint -p auto -v
 
 .PHONY: build
