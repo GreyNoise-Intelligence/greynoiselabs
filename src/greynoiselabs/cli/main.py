@@ -202,7 +202,9 @@ def c2s(output: Annotated[str, output], config_dir: Annotated[str, config_dir]):
 
 @app.command()
 def http_requests(
-    output: Annotated[str, output], config_dir: Annotated[str, config_dir]
+    output: Annotated[str, output],
+    config_dir: Annotated[str, config_dir],
+    ips: Annotated[bool, typer.Option("--ips", help="Show the source IPs.")] = False,
 ):
     """
     Return the top 1% of HTTP requests ranked by pervasiveness.
@@ -217,6 +219,8 @@ def http_requests(
         if len(response.top_h_t_t_p_requests.http_requests) == 0:
             print("no results found.")
         for request in response.top_h_t_t_p_requests.http_requests:
+            if not ips:
+                delattr(request, "source_ips")
             out(request, writer)
     except GraphQLClientGraphQLMultiError as ex:
         if NOT_READY_MSG in str(ex):
@@ -235,7 +239,11 @@ def http_requests(
 
 
 @app.command()
-def payloads(output: Annotated[str, output], config_dir: Annotated[str, config_dir]):
+def payloads(
+    output: Annotated[str, output],
+    config_dir: Annotated[str, config_dir],
+    ips: Annotated[bool, typer.Option("--ips", help="Show the source IPs.")] = False,
+):
     """
     Return the top 1% of observed payloads ranked by pervasiveness
     This is for payloads over the last 7 days.
@@ -248,6 +256,8 @@ def payloads(output: Annotated[str, output], config_dir: Annotated[str, config_d
         if len(response.top_payloads.payloads) == 0:
             print("no results found.")
         for payload in response.top_payloads.payloads:
+            if not ips:
+                delattr(payload, "source_ips")
             out(payload, writer)
     except GraphQLClientGraphQLMultiError as ex:
         if NOT_READY_MSG in str(ex):
