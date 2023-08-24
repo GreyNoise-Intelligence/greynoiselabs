@@ -8,6 +8,7 @@ query getPayloads {
       request_count
       source_ip_count
       pervasiveness
+      source_ips
     }
   }
 }
