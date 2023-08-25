@@ -23,7 +23,7 @@ jobs:
       - name: Publish to PyPI
         run: make publish
       - name: Release Notification
-        uses: thedaviddias/publish-release-info-action@v3.0.0
+        uses: thedaviddias/publish-release-info-action@v3.3.0
         with:
           github_token: ${{ secrets.GREYNOISELABS_PAT }}
           slack_webhook_urls: ${{ secrets.LABS_UPDATES_SLACK_WEBHOOK }}
