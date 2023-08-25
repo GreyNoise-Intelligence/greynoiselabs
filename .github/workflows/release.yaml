@@ -22,3 +22,10 @@ jobs:
           version: 1.5.1
       - name: Publish to PyPI
         run: make publish
+      - name: Release Notification
+        uses: thedaviddias/publish-release-info-action@v3.0.0
+        with:
+          github_token: ${{ secrets.GREYNOISELABS_PAT }}
+          slack_webhook_urls: ${{ secrets.LABS_UPDATES_SLACK_WEBHOOK }}
+          time_zone_offset: "-4"
+          fail_on_slack_error: "false"
