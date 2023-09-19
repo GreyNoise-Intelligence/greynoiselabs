@@ -56,3 +56,27 @@ jobs:
           tag: "v${{ env.VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@v3
+        with:
+          outputFile: CHANGELOG.md
+          toTag: "v${{ env.VERSION }}"
+          # yamllint disable
+          configurationJson: |
+            {
+              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "categories": [
+                {
+                    "title": "## 🚀 Enhancements",
+                    "labels": ["enhancement"]
+                },
+                {
+                    "title": "## 📦 Dependencies",
+                    "labels": ["dependencies"]
+                }
+              ]
+            }
+          # yamllint enable
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
