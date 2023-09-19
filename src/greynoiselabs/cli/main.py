@@ -11,7 +11,7 @@ import typer
 from platformdirs import PlatformDirs
 from typing_extensions import Annotated
 
-from greynoiselabs.api.client import Client
+from greynoiselabs.api.client import Client, Upload
 from greynoiselabs.api.exceptions import GraphQLClientGraphQLMultiError
 from greynoiselabs.cli.auth import authenticate, login
 
@@ -58,12 +58,32 @@ output = typer.Option(
 ip = typer.Argument(
     help="Specify the IP to retrieve.", show_default=False, default_factory=lambda: ""
 )
-input: typer.Argument(
+input = typer.Argument(
     help="Specify the input text to translate.",
     show_default=False,
     default_factory=lambda: "",
 )
+
+reverse = typer.Option(
+    "--reverse",
+    "-r",
+    help="PCAP extraction defaults to inbound, set to true to reverse the extraction.",
+    show_default=True,
+    default_factory=lambda: False,
+)
+
+pcap = typer.Argument(
+    help="Specify the path to the PCAP file to be analyzed.",
+)
+
+pcap_app = typer.Typer(
+    no_args_is_help=True,
+    pretty_exceptions_enable=False,
+    help="Commands for analyzing a PCAP/PCAPNG file.",
+)
+
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
+app.add_typer(pcap_app, name="pcap")
 
 
 def initOutfile(outfile: str):
@@ -108,10 +128,13 @@ def out(obj: any, outfile_writer: jsonlines.Writer):
             typer.Abort()
     else:
         try:
+            # NOTE: This uses the default to json.dumps() by extracting all
+            # nested objects that contain a __dict__ to prevent serialization errors.
+            flattend_obj = json.loads(json.dumps(obj, default=lambda o: o.__dict__))
             if outfile_writer:
-                outfile_writer.write(obj.__dict__)
+                outfile_writer.write(flattend_obj)
             else:
-                print(json.dumps(obj.__dict__))
+                print(json.dumps(flattend_obj))
         except Exception as ex:
             print(f"unable to dump object {ex}")
             typer.Abort()
@@ -402,6 +425,98 @@ def gengnql(
 an error occured while processing your request.
 """
         )
+        raise typer.Abort()
+    if writer:
+        writer.close()
+
+
+@pcap_app.command()
+def pivot(
+    pcap: Annotated[str, pcap],
+    reverse: Annotated[bool, reverse],
+    output: Annotated[str, output],
+    config_dir: Annotated[str, config_dir],
+):
+    """
+    Extracts interesting artifacts from a PCAP file by IP that can be used to
+    pivot into GreyNoise or other enrichment sources.
+    """
+    init(config_dir)
+    writer = initOutfile(output)
+    try:
+        with open(pcap, "rb") as f:
+            response = asyncio.run(
+                client.get_pivot(
+                    pcap=Upload(
+                        filename=pcap,
+                        content=f,
+                        content_type="application/vnd.tcpdump.pcap",
+                    ),
+                    reverse=reverse,
+                    gnql=False,
+                )
+            )
+        if len(response.pivot.ips) == 0:
+            print("no results found.")
+        for ip in response.pivot.ips:
+            out(ip, writer)
+    except GraphQLClientGraphQLMultiError as ex:
+        if NOT_READY_MSG in str(ex):
+            print(
+                "Labs API data refresh in progress, please try again in a few minutes."
+            )
+            raise typer.Abort()
+        else:
+            print(f"unable to get pivot from PCAP: {ex}")
+            raise typer.Abort()
+    except Exception as ex:
+        print(f"unable to get pivot from PCAP: {ex}")
+        raise typer.Abort()
+    if writer:
+        writer.close()
+
+
+@pcap_app.command()
+def gnql(
+    pcap: Annotated[str, pcap],
+    reverse: Annotated[bool, reverse],
+    output: Annotated[str, output],
+    config_dir: Annotated[str, config_dir],
+):
+    """
+    Extracts interesting artifacts from a PCAP file and converts these
+    artifacts into compliant GNQL queries that you can evaluate in GreyNoise.
+    """
+    init(config_dir)
+    writer = initOutfile(output)
+    try:
+        with open(pcap, "rb") as f:
+            response = asyncio.run(
+                client.get_pivot(
+                    pcap=Upload(
+                        filename=pcap,
+                        content=f,
+                        content_type="application/vnd.tcpdump.pcap",
+                    ),
+                    reverse=reverse,
+                    gnql=True,
+                )
+            )
+        if len(response.pivot.queries) == 0:
+            print("no results found.")
+        for queries in response.pivot.queries:
+            out(queries, writer)
+    except GraphQLClientGraphQLMultiError as ex:
+        if NOT_READY_MSG in str(ex):
+            print(
+                "Labs API data refresh in progress, please try again in a few minutes."
+            )
+            raise typer.Abort()
+        else:
+            print(f"unable to get GNQL from PCAP: {ex}")
+            raise typer.Abort()
+    except Exception as ex:
+        print(f"unable to get GNQL from PCAP: {ex}")
         raise typer.Abort()
     if writer:
         writer.close()

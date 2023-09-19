@@ -265,6 +265,8 @@ input PivotInput {
 }
 
 type PivotIP {
+  """The IP that was extracted from the PCAP."""
+  ip: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "1.2.3.4" }])
   """The first time this IP was observed in the PCAP."""
   firstSeen: Time! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2006-01-02T15:04:05.999999-0700" }])
   """The last time this IP was observed in the PCAP."""
@@ -294,12 +296,7 @@ type PortCount {
 
 type PCAPResponse {
   id: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "741912a3-8f19-4004-a089-35c7c5f8bbf2" }])
-  ips: [PivotIPMap!]!
-}
-
-type PivotIPMap {
-  key: String!
-  value: PivotIP!
+  ips: [PivotIP!]!
 }
 
 union PivotResult = GNQLResult | PCAPResponse
