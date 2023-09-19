@@ -112,3 +112,10 @@ pyvenv.cfg
 workspace/
 
 .DS_Store
+
+# pcap files 
+*.pcap
+*.pcapng
+
+# VS Code 
+.vscode/
