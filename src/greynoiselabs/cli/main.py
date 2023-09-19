@@ -76,7 +76,12 @@ pcap = typer.Argument(
     help="Specify the path to the PCAP file to be analyzed.",
 )
 
-pcap_app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
+pcap_app = typer.Typer(
+    no_args_is_help=True,
+    pretty_exceptions_enable=False,
+    help="Commands for analyzing a PCAP/PCAPNG file.",
+)
+
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
 app.add_typer(pcap_app, name="pcap")
 
@@ -499,8 +504,8 @@ def gnql(
             )
         if len(response.pivot.queries) == 0:
             print("no results found.")
-        for query in response.pivot.queries:
-            out(query, writer)
+        for queries in response.pivot.queries:
+            out(queries, writer)
     except GraphQLClientGraphQLMultiError as ex:
         if NOT_READY_MSG in str(ex):
             print(
