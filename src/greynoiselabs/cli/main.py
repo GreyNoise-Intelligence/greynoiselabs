@@ -146,7 +146,10 @@ def new_client(id_token: any):
         "https://api.labs.greynoise.io/1/query",
         {"Authorization": f"Bearer {id_token}"},
         httpx.AsyncClient(
-            headers={"Authorization": f"Bearer {id_token}"},
+            headers={
+                "Authorization": f"Bearer {id_token}",
+                "User-Agent": f"GreyNoiseLabs/{get_version()}",
+            },
             transport=transport,
             timeout=90.0,
         ),
