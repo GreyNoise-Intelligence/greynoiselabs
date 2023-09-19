@@ -1,4 +1,9 @@
 ---
+fail_fast: true
+exclude: |
+  (?x)^(
+    src/greynoiselabs/api/.*
+  )$
 repos:
   - repo: local
     hooks:
