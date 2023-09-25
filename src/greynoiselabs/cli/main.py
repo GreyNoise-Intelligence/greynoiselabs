@@ -4,11 +4,16 @@ import asyncio
 import importlib.metadata
 import json
 import os
+import subprocess
+import time
+from pathlib import Path
 
 import httpx
 import jsonlines
+import pyperclip as pc
 import typer
 from platformdirs import PlatformDirs
+from rich.progress import track
 from typing_extensions import Annotated
 
 from greynoiselabs.api.client import Client, Upload
@@ -69,7 +74,26 @@ reverse = typer.Option(
     "-r",
     help="PCAP extraction defaults to inbound, set to true to reverse the extraction.",
     show_default=True,
-    default_factory=lambda: False,
+)
+
+ignore_private = typer.Option(
+    "--ignore-private",
+    help="Don't parse packets which use an RFC1918 private IP as the \
+        source OR destinaiton IP.",
+    show_default=True,
+)
+
+ignore_flows = typer.Option(
+    "--ignore-flows",
+    help="Don't parse raw packet flows, only packets containing \
+        useful metadata from HTTP, DNS, etc.",
+    show_default=True,
+)
+
+show = typer.Option(
+    "--show",
+    help="Ouput data to STDOUT instead of the clipboard.",
+    show_default=True,
 )
 
 pcap = typer.Argument(
@@ -143,7 +167,7 @@ def out(obj: any, outfile_writer: jsonlines.Writer):
 def new_client(id_token: any):
     transport = httpx.AsyncHTTPTransport(retries=1)
     return Client(
-        "https://api.labs.greynoise.io/1/query",
+        os.getenv("GN_API_URL", "https://api.labs.greynoise.io/1/query"),
         {"Authorization": f"Bearer {id_token}"},
         httpx.AsyncClient(
             headers={
@@ -172,28 +196,104 @@ def init(
     Initialize the client by authenticating with Auth0 and saving the token to a file.
     """
     global current_user, token_data, client
-    init_conf_dir(config_dir)
-    token_data, current_user = authenticate(config_dir)
+    initialized_dir = init_conf_dir(config_dir)
+    check_version(initialized_dir)
+    token_data, current_user = authenticate(initialized_dir)
     if token_data is None or current_user is None:
         run_init = typer.confirm(
             "You are not authenticated, would you like to do this now?"
         )
         if run_init:
-            token_data, current_user = login(config_dir)
+            token_data, current_user = login(initialized_dir)
             print("Authentication successful")
-            raise typer.Abort()
+            return initialized_dir
         else:
             print("You must authenticate to use this CLI")
             raise typer.Abort()
     if token_data is not None and current_user is not None:
         try:
             client = new_client(token_data["id_token"])
+            return initialized_dir
         except Exception as ex:
             print(f"Unable to create client {ex}")
             raise typer.Abort()
     else:
         print("Authentication failed, please try again or contact labs@greynoise.io.")
         raise typer.Abort()
+
+
+def check_version(config_dir, force=False):
+    """Check the latest version of the CLI."""
+    trigger_check = True
+    updates_checked = f"{config_dir}/.updates_checked"
+    disabled_path = f"{config_dir}/.updates_disabled"
+    package_name = "greynoiselabs"
+    if Path(disabled_path).exists():
+        return
+    if Path(updates_checked).exists():
+        # Get the file's modification time as a Unix timestamp
+        modification_time = os.path.getmtime(updates_checked)
+
+        # Get the current time as a Unix timestamp
+        current_time = time.time()
+
+        # Calculate the time difference in seconds
+        time_difference = current_time - modification_time
+        # We only check automatically a maximum of once per hour
+        if time_difference < 14400:
+            trigger_check = False
+    if trigger_check or force:
+        response = httpx.get(f"https://pypi.org/pypi/{package_name}/json")
+        for value in track(range(100), description="Checking for update..."):
+            # Fake processing time
+            time.sleep(0.01)
+        latest_version = response.json()["info"]["version"]
+        current_version = get_version()
+        if latest_version == current_version:
+            print(
+                f"\n{current_version} is already the latest version, skipping update."
+            )
+            Path(updates_checked).touch()
+            return
+        else:
+            update_confirmed = typer.confirm(
+                f"A new version ({latest_version}) is available. Would you like \
+                    to update?"
+            )
+            if update_confirmed:
+                Path(updates_checked).touch()
+                for value in track(range(100), description="Updating..."):
+                    # Fake processing time
+                    time.sleep(0.01)
+                run_update(latest_version)
+            else:
+                disable_update = typer.confirm(
+                    "Skipping this update, would you like to disable automatic \
+                        update checks?"
+                )
+                if disable_update:
+                    Path(disabled_path).touch()
+                    print("Automatic update checks disabled.")
+
+
+def run_update(latest_version):
+    """Update the CLI to the latest version.
+    This will re-enable automatic update checking."""
+    subprocess.run(["pip", "install", "--upgrade", f"greynoiselabs=={latest_version}"])
+    print(f"CLI updated successfully to {latest_version}.")
+
+
+@app.command()
+def update(config_dir: Annotated[str, config_dir]):
+    """Update the CLI to the latest version.
+    This will re-enable automatic update checking."""
+    initialized_dir = init_conf_dir(config_dir)
+    disabled_path = f"{initialized_dir}/.updates_disabled"
+    # Remove the disabled path so automatic updates will be re-enabled
+    if Path(disabled_path).exists():
+        os.rmtree(disabled_path)
+        print("Automatic updates re-enabled.")
+    check_version(initialized_dir, force=True)
 
 
 @app.command()
@@ -436,9 +536,11 @@ an error occured while processing your request.
 @pcap_app.command()
 def pivot(
     pcap: Annotated[str, pcap],
-    reverse: Annotated[bool, reverse],
     output: Annotated[str, output],
     config_dir: Annotated[str, config_dir],
+    reverse: Annotated[bool, reverse] = False,
+    ignore_private: Annotated[bool, ignore_private] = False,
+    ignore_flows: Annotated[bool, ignore_flows] = False,
 ):
     """
     Extracts interesting artifacts from a PCAP file by IP that can be used to
@@ -456,6 +558,8 @@ def pivot(
                         content_type="application/vnd.tcpdump.pcap",
                     ),
                     reverse=reverse,
+                    ignore_flows=ignore_flows,
+                    ignore_private=ignore_private,
                     gnql=False,
                 )
             )
@@ -480,11 +584,75 @@ def pivot(
 
 
 @pcap_app.command()
-def gnql(
+def ips(
     pcap: Annotated[str, pcap],
-    reverse: Annotated[bool, reverse],
     output: Annotated[str, output],
     config_dir: Annotated[str, config_dir],
+    reverse: Annotated[bool, reverse] = False,
+    ignore_private: Annotated[bool, ignore_private] = False,
+    ignore_flows: Annotated[bool, ignore_flows] = False,
+    show: Annotated[bool, show] = False,
+):
+    """
+    Extract distinct IPs from a PCAP and copy to the clipboard for use in 3rd party
+    analysis tools like https://viz.greynoise.io/analysis
+    """
+    init(config_dir)
+    ips = []
+    writer = initOutfile(output)
+    try:
+        with open(pcap, "rb") as f:
+            response = asyncio.run(
+                client.get_pivot(
+                    pcap=Upload(
+                        filename=pcap,
+                        content=f,
+                        content_type="application/vnd.tcpdump.pcap",
+                    ),
+                    reverse=reverse,
+                    ignore_flows=ignore_flows,
+                    ignore_private=ignore_private,
+                    gnql=False,
+                )
+            )
+        if len(response.pivot.ips) == 0:
+            print("no results found.")
+        for ip in response.pivot.ips:
+            ips.append(ip.ip)
+    except GraphQLClientGraphQLMultiError as ex:
+        if NOT_READY_MSG in str(ex):
+            print(
+                "Labs API data refresh in progress, please try again in a few minutes."
+            )
+            raise typer.Abort()
+        else:
+            print(f"unable to get pivot from PCAP: {ex}")
+            raise typer.Abort()
+    except Exception as ex:
+        print(f"unable to get pivot from PCAP: {ex}")
+        raise typer.Abort()
+    if show:
+        for ip in ips:
+            out(ip, writer)
+    else:
+        ipstr = "\n".join(ips)
+        pc.copy(ipstr)
+        print("The distinct IP addresses from the PCAP have been copied.")
+        print("You can paste the copied IPs with Ctrl+V or Command+V.")
+        print("For example navigate to: https://viz.greynoise.io/analysis.")
+        print("--show will output the IPs to STDOUT and hide this message.")
+    if writer:
+        writer.close()
+
+
+@pcap_app.command()
+def gnql(
+    pcap: Annotated[str, pcap],
+    output: Annotated[str, output],
+    config_dir: Annotated[str, config_dir],
+    reverse: Annotated[bool, reverse] = False,
+    ignore_private: Annotated[bool, ignore_private] = False,
+    ignore_flows: Annotated[bool, ignore_flows] = False,
 ):
     """
     Extracts interesting artifacts from a PCAP file and converts these
@@ -502,6 +670,8 @@ def gnql(
                         content_type="application/vnd.tcpdump.pcap",
                     ),
                     reverse=reverse,
+                    ignore_private=ignore_private,
+                    ignore_flows=ignore_flows,
                     gnql=True,
                 )
             )

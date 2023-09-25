@@ -1,7 +1,9 @@
 query getPivot($pcap: Upload!, 
-               $gnql: Boolean = false, 
-               $reverse: Boolean = false) {
-  pivot(input: {file: $pcap, gnql: $gnql, reverse: $reverse}) {
+               $gnql: Boolean!, 
+               $reverse: Boolean!,
+               $ignorePrivate: Boolean!,
+               $ignoreFlows: Boolean!) {
+  pivot(input: {file: $pcap, gnql: $gnql, reverse: $reverse, ignorePrivate: $ignorePrivate, ignoreFlows: $ignoreFlows}) {
     ... on GNQLResult {
       queries {
         type
@@ -11,9 +13,9 @@ query getPivot($pcap: Upload!,
     ... on PCAPResponse {
       id
       ips {
-        firstSeen
+        firstPacketTime
         ip
-        lastSeen
+        lastPacketTime
         userAgents
         portCounts {
           count
