@@ -52,6 +52,7 @@ install:
 .PHONY: shell
 shell: build install
 	( \
+		export GN_API_URL="http://127.0.0.1/1/query"; \
 		poetry shell; \
     )
 

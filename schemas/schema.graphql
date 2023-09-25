@@ -262,15 +262,17 @@ input PivotInput {
   file: Upload!
   gnql: Boolean!
   reverse: Boolean!
+  ignorePrivate: Boolean!
+  ignoreFlows: Boolean!
 }
 
 type PivotIP {
   """The IP that was extracted from the PCAP."""
   ip: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "1.2.3.4" }])
   """The first time this IP was observed in the PCAP."""
-  firstSeen: Time! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2006-01-02T15:04:05.999999-0700" }])
+  firstPacketTime: Time! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2006-01-02T15:04:05.999999-0700" }])
   """The last time this IP was observed in the PCAP."""
-  lastSeen: Time! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2006-01-02T15:04:05.999999-0700" }])
+  lastPacketTime: Time! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "2006-01-02T15:04:05.999999-0700" }])
   """The number of times this IP sent packets to each TCP or UDP port."""
   portCounts: [PortCount!]!
   """The unique list of HTTP request paths that were observed in the PCAP."""

@@ -12,6 +12,12 @@ This package provides a CLI and SDK to the `GreyNoise Labs API`_ service.
 The GreyNoise Labs API provides access to the GreyNoise sensor datasets,
 including the raw sensor data, contextual metadata, and rapid prototyping utilities from the GreyNoise Labs team.
 
+Please make sure you're always using the latest version of the CLI. This is an experimental service, older versions
+of the CLI may not work as expected and the team does not gurantee semantic versioning with non-breaking changes. 
+If you're experiencing an error, always attempt to update to the latest version first. 
+
+You can update the CLI with ``python3 -m pip install greynoiselabs --upgrade``.
+
 You can read more about the team and their work at `GreyNoise Labs`_
 
 .. _GreyNoise Labs: https://www.labs.greynoise.io
@@ -41,6 +47,12 @@ CLI Install
     Token saved to /Users/user/Library/Application Support/greynoiselabs/0.1.19/token.json.
     Authentication successful
     Aborted.
+
+Autocomplete
+============
+``greynoiselabs`` uses autocomplete by default. You can start typing a command like ``greynoiselabs pc`` and then hit tab twice. 
+
+If you're using ZSH as your shell, you may need to add ``compinit -D`` to the end of your ``~/.zshrc`` file. 
 
 
 CLI Quick Start
