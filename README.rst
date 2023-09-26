@@ -227,7 +227,7 @@ Show distinct HTTP web paths that were crawled by a User-Agent
 3. ``greynoiselabs http-requests --user-agent 'zgrab' | jq '.path' | uniq``
 
 Filter payloads by protocol
-4. ``greynoiselabs payloads --protocol TCP`
+4. ``greynoiselabs payloads --protocol TCP``
 
 
 SDK Quick Start
