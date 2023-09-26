@@ -187,6 +187,7 @@ def new_client(id_token: any):
             headers={
                 "Authorization": f"Bearer {id_token}",
                 "User-Agent": f"GreyNoiseLabs/{get_version()}",
+                "Accept-Encoding": "gzip",
             },
             transport=transport,
             timeout=90.0,
