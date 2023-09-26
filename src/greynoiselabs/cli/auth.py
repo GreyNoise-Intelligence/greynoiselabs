@@ -90,7 +90,7 @@ def init_device_flow():
     authenticated = False
     device_code_payload = {
         "client_id": AUTH0_CLIENT_ID,
-        "scope": "openid profile offline_access",
+        "scope": "openid profile offline_access email",
     }
     device_code_response = requests.post(
         "https://{}/oauth/device/code".format(AUTH0_DOMAIN), data=device_code_payload
@@ -136,6 +136,7 @@ def authenticate(config_dir: str):
     """
     global token_data
     global current_user
+    global email
     validated = False
     token_filename = os.path.join(config_dir, "token.json")
 
@@ -148,7 +149,8 @@ def authenticate(config_dir: str):
                 algorithms=ALGORITHMS,
                 options={"verify_signature": False},
             )
-            return token_data, current_user
+            email = current_user.get("email")  # extract email from decoded token
+            return token_data, current_user, email
         else:
             # Attempt to refresh the token when possible
             # the one we have in the file is not valid.
@@ -160,9 +162,10 @@ def authenticate(config_dir: str):
                     algorithms=ALGORITHMS,
                     options={"verify_signature": False},
                 )
-                return token_data, current_user
+                email = current_user.get("email")  # extract email from decoded token
+                return token_data, current_user, email
     else:
-        return None, None
+        return None, None, None
 
 
 def login(config_dir: str):
@@ -184,7 +187,8 @@ def login(config_dir: str):
             algorithms=ALGORITHMS,
             options={"verify_signature": False},
         )
-        return token_data, current_user
+        email = current_user.get("email")  # extract email from decoded token
+        return token_data, current_user, email
     else:
         print("Unable to obtain a valid token, please contact labs@greynoise.io.")
         typer.Abort()

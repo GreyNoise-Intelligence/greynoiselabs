@@ -1,5 +1,5 @@
-query getRequests {
-  topHTTPRequests {
+query getRequests($useragent: String!) {
+  topHTTPRequests(input: { userAgent: $useragent }) {
     httpRequests {
       path
       request_count

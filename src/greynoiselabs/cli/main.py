@@ -63,6 +63,20 @@ output = typer.Option(
 ip = typer.Argument(
     help="Specify the IP to retrieve.", show_default=False, default_factory=lambda: ""
 )
+protocol = typer.Option(
+    "--protocol",
+    "-p",
+    help="Specify the IP protocol to filter on [TCP or UDP].",
+    show_default=False,
+    default_factory=lambda: "",
+)
+useragent = typer.Option(
+    "--user-agent",
+    "-u",
+    help="Specify a string that the User-Agent contains. This is case sensitive.",
+    show_default=False,
+    default_factory=lambda: "",
+)
 input = typer.Argument(
     help="Specify the input text to translate.",
     show_default=False,
@@ -198,14 +212,14 @@ def init(
     global current_user, token_data, client
     initialized_dir = init_conf_dir(config_dir)
     check_version(initialized_dir)
-    token_data, current_user = authenticate(initialized_dir)
-    if token_data is None or current_user is None:
+    token_data, current_user, email = authenticate(initialized_dir)
+    if token_data is None or current_user is None or email is None:
         run_init = typer.confirm(
             "You are not authenticated, would you like to do this now?"
         )
         if run_init:
-            token_data, current_user = login(initialized_dir)
-            print("Authentication successful")
+            token_data, current_user, email = login(initialized_dir)
+            print(f"Authentication successful {email}")
             return initialized_dir
         else:
             print("You must authenticate to use this CLI")
@@ -330,6 +344,7 @@ def c2s(output: Annotated[str, output], config_dir: Annotated[str, config_dir]):
 def http_requests(
     output: Annotated[str, output],
     config_dir: Annotated[str, config_dir],
+    useragent: Annotated[str, useragent],
     ips: Annotated[bool, typer.Option("--ips", help="Show the source IPs.")] = False,
 ):
     """
@@ -341,7 +356,7 @@ def http_requests(
     init(config_dir)
     writer = initOutfile(output)
     try:
-        response = asyncio.run(client.get_requests())
+        response = asyncio.run(client.get_requests(useragent))
         if len(response.top_h_t_t_p_requests.http_requests) == 0:
             print("no results found.")
         for request in response.top_h_t_t_p_requests.http_requests:
@@ -368,6 +383,7 @@ def http_requests(
 def payloads(
     output: Annotated[str, output],
     config_dir: Annotated[str, config_dir],
+    protocol: Annotated[str, protocol],
     ips: Annotated[bool, typer.Option("--ips", help="Show the source IPs.")] = False,
 ):
     """
@@ -378,7 +394,7 @@ def payloads(
     init(config_dir)
     writer = initOutfile(output)
     try:
-        response = asyncio.run(client.get_payloads())
+        response = asyncio.run(client.get_payloads(protocol))
         if len(response.top_payloads.payloads) == 0:
             print("no results found.")
         for payload in response.top_payloads.payloads:

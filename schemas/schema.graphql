@@ -36,11 +36,11 @@ type Query {
 	Return the top 1% of HTTP requests ranked by pervasiveness GreyNoise has observed over the last 7 days. This data may be up to 4.5 hours old.
 	The '/' path has been removed as this is less useful in most contexts.
   """
-  topHTTPRequests: HTTPResult!
+  topHTTPRequests(input: HTTPInput): HTTPResult!
   """
 	Return the top 1% of payloads ranked by pervasiveness GreyNoise has observed over the last 7 days. This data may be up to 4.5 hours old.
   """
-  topPayloads: PayloadResult!
+  topPayloads(input: PayloadInput): PayloadResult!
 	"""
 	Return the top 1% of IPs searched in GreyNoise ordered by the number of users observed over the last 7 days. This data may be up to 4.5 hours old.
 	and then the number of times it was requested.
@@ -119,6 +119,11 @@ type HTTPRequest {
   source_ips: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"1.2.3.4\", \"4.5.6.7\"]" }])
 }
 
+input HTTPInput {
+  """Specify the user-agent to filter on. This is case sensitive."""
+  userAgent: String
+}
+
 type HTTPResult {
   queryInfo: QueryInfo!
   httpRequests: [HTTPRequest!]! 
@@ -148,6 +153,11 @@ type Payload {
   The source IPs that this payload was seen from.
   """
   source_ips: [String!]! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "[\"1.2.3.4\", \"4.5.6.7\"]" }])
+}
+
+input PayloadInput {
+  """Specify the protocol to filter on."""
+  protocol: String
 }
 
 type PayloadResult {

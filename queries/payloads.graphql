@@ -1,5 +1,5 @@
-query getPayloads {
-  topPayloads {
+query getPayloads($protocol: String!) {
+  topPayloads(input: { protocol: $protocol }) {
     payloads {
       protocol
       size

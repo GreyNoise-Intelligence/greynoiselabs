@@ -223,6 +223,13 @@ Show the most popular IPs that are searched at GreyNoise but not observed by our
 Group the ip's hitting GreyNoise sensors by their HTTP page title
 2. ``greynoiselabs knocks | jq -s 'group_by(.title) | map({title: .[0].title, agg: map(.source_ip) })'``
 
+Show distinct HTTP web paths that were crawled by a User-Agent
+3. ``greynoiselabs http-requests --user-agent 'zgrab' | jq '.path' | uniq``
+
+Filter payloads by protocol
+4. ``greynoiselabs payloads --protocol TCP`
+
+
 SDK Quick Start
 ===============
 **Install the library**:
