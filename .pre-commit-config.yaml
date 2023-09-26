@@ -31,6 +31,12 @@ repos:
         language: system
         types:
           - python
+      - id: rst-lint
+        name: reStructuredText linting
+        entry: rst-lint
+        language: system
+        types:
+          - rst
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.17.0
     hooks:
