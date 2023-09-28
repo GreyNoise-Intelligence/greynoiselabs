@@ -143,12 +143,14 @@ type Payload {
   pervasiveness: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "98" }])
   """The transport layer protcol observed.."""
   protocol: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "TCP" }])
-  """The size of the payload in bytes."""
+  """The size of the original (pre-truncation) payload in bytes."""
   size: Int! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "56" }])
   """The first 1kb of the observed payload as UTF-8 escaped."""
   payload: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "GET /nice%20ports%2C/Tri%6Eity.txt%2ebak HTTP/1.0 Connection: close" }])
   """The first 1kb of the observed payload as base64 of the raw binary."""
   payload_b64: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "R0VUIC9uaWNlJTIwcG9ydHMlMkMvVHJpJTZFaXR5LnR4dCUyZWJhayBIVFRQLzEuMA0KQ29ubmVjdGlvbjogY2xvc2UNCg0K" }])
+  """SHA256 of the entire original payload (while the 1Kb truncation does not apply here, we do truncate to 10240Kb on the sensor)."""
+  sha256_sum: String! @goTag(key: "mapstructure") @spectaql(options: [{ key: "example", value: "fe477b15f73801346f124bef47235b73f7a373dd12ff05e67789192b1e73f4ac" }])
   """
   The source IPs that this payload was seen from.
   """
@@ -158,6 +160,8 @@ type Payload {
 input PayloadInput {
   """Specify the protocol to filter on."""
   protocol: String
+  """Specify the limit of results to return, default is 10,000. (You will be limited to 1% of the total results available)"""
+  limit: Int
 }
 
 type PayloadResult {

@@ -13,6 +13,7 @@ import jsonlines
 import pyperclip as pc
 import typer
 from platformdirs import PlatformDirs
+from rich import print as rprint
 from rich.progress import track
 from typing_extensions import Annotated
 
@@ -68,14 +69,26 @@ protocol = typer.Option(
     "-p",
     help="Specify the IP protocol to filter on [TCP or UDP].",
     show_default=False,
-    default_factory=lambda: "",
+)
+
+limit = typer.Option(
+    "--limit",
+    "-l",
+    help="Limit the number of records returned, the max value will be limited based on the max % permitted for the type of data.",  # noqa: E501
+    show_default=True,
+)
+
+verbose = typer.Option(
+    "--verbose",
+    "-v",
+    help="Make output verbose.",
+    show_default=False,
 )
 useragent = typer.Option(
     "--user-agent",
     "-u",
     help="Specify a string that the User-Agent contains. This is case sensitive.",
     show_default=False,
-    default_factory=lambda: "",
 )
 input = typer.Argument(
     help="Specify the input text to translate.",
@@ -190,7 +203,7 @@ def new_client(id_token: any):
                 "Accept-Encoding": "gzip",
             },
             transport=transport,
-            timeout=90.0,
+            timeout=300.0,
         ),
     )
 
@@ -204,15 +217,34 @@ def version():
 
 
 @app.command()
+def info(config_dir: Annotated[str, config_dir]):
+    """
+    Output configuration and other information about the CLI.
+    """
+    rprint("Name:          greynoiselabs")
+    rprint(
+        "Description:   CLI for interactacting with GreyNoise Labs experimental services."  # noqa: E501
+    )
+    rprint(f"Version:       {get_version()}")
+    rprint(f"Config Dir:    {init_conf_dir(config_dir)}")
+    rprint("Contact:       labs@greynoise.io")
+    rprint("Homepage:      https://github.com/GreyNoise-Intelligence/greynoiselabs")
+    rprint("API Docs:      https://api.labs.greynoise.io/1/docs/")
+    rprint("Maintainer:    https://github.com/Obsecurus")
+    rprint("Labs Website:  https://www.labs.greynoise.io")
+
+
+@app.command()
 def init(
     config_dir: Annotated[str, config_dir],
+    verbose: Annotated[bool, verbose] = False,
 ):
     """
     Initialize the client by authenticating with Auth0 and saving the token to a file.
-    """
+    """  # noqa: E501
     global current_user, token_data, client
     initialized_dir = init_conf_dir(config_dir)
-    check_version(initialized_dir)
+    check_version(initialized_dir, verbose=verbose)
     token_data, current_user, email = authenticate(initialized_dir)
     if token_data is None or current_user is None or email is None:
         run_init = typer.confirm(
@@ -220,15 +252,17 @@ def init(
         )
         if run_init:
             token_data, current_user, email = login(initialized_dir)
-            print(f"Authentication successful {email}")
-            return initialized_dir
+            typer.Abort(f"Authentication successful {email}")
         else:
             print("You must authenticate to use this CLI")
             raise typer.Abort()
     if token_data is not None and current_user is not None:
         try:
             client = new_client(token_data["id_token"])
-            return initialized_dir
+            if verbose:
+                token_file = os.path.join(initialized_dir, "token.json")
+                typer.Abort(f"Authentication successful using token at {token_file}")
+
         except Exception as ex:
             print(f"Unable to create client {ex}")
             raise typer.Abort()
@@ -237,15 +271,21 @@ def init(
         raise typer.Abort()
 
 
-def check_version(config_dir, force=False):
+def check_version(config_dir, force=False, verbose=False):
     """Check the latest version of the CLI."""
     trigger_check = True
     updates_checked = f"{config_dir}/.updates_checked"
     disabled_path = f"{config_dir}/.updates_disabled"
     package_name = "greynoiselabs"
     if Path(disabled_path).exists():
+        if verbose:
+            print(
+                f"Automatic updates disabled, because {disabled_path} exists skipping check."  # noqa: E501
+            )
         return
     if Path(updates_checked).exists():
+        if verbose and not force:
+            print(f"Automaticly running, because {disabled_path} is not present.")
         # Get the file's modification time as a Unix timestamp
         modification_time = os.path.getmtime(updates_checked)
 
@@ -257,7 +297,18 @@ def check_version(config_dir, force=False):
         # We only check automatically a maximum of once per hour
         if time_difference < 14400:
             trigger_check = False
+            if verbose and not force:
+                print(
+                    "It has been less than four hours since we last checked for an update, skipping..."  # noqa: E501
+                )
+        else:
+            if verbose:
+                print(
+                    f"It has been {time_difference} seconds since we last checked for an update, checking..."  # noqa: E501
+                )
     if trigger_check or force:
+        if verbose and force:
+            print("Forcing update check...")
         response = httpx.get(f"https://pypi.org/pypi/{package_name}/json")
         for value in track(range(100), description="Checking for update..."):
             # Fake processing time
@@ -288,6 +339,8 @@ def check_version(config_dir, force=False):
                 )
                 if disable_update:
                     Path(disabled_path).touch()
+                    if verbose:
+                        print(f"{disabled_path} created to disable automatic updates.")
                     print("Automatic update checks disabled.")
 
 
@@ -299,16 +352,20 @@ def run_update(latest_version):
 
 
 @app.command()
-def update(config_dir: Annotated[str, config_dir]):
+def update(
+    config_dir: Annotated[str, config_dir], verbose: Annotated[bool, verbose] = False
+):
     """Update the CLI to the latest version.
     This will re-enable automatic update checking."""
     initialized_dir = init_conf_dir(config_dir)
     disabled_path = f"{initialized_dir}/.updates_disabled"
     # Remove the disabled path so automatic updates will be re-enabled
     if Path(disabled_path).exists():
+        if verbose:
+            print(f"Removing {disabled_path} to re-enable automatic updates.")
         os.rmtree(disabled_path)
         print("Automatic updates re-enabled.")
-    check_version(initialized_dir, force=True)
+    check_version(initialized_dir, force=True, verbose=verbose)
 
 
 @app.command()
@@ -345,7 +402,7 @@ def c2s(output: Annotated[str, output], config_dir: Annotated[str, config_dir]):
 def http_requests(
     output: Annotated[str, output],
     config_dir: Annotated[str, config_dir],
-    useragent: Annotated[str, useragent],
+    useragent: Annotated[str, useragent] = None,
     ips: Annotated[bool, typer.Option("--ips", help="Show the source IPs.")] = False,
 ):
     """
@@ -384,7 +441,8 @@ def http_requests(
 def payloads(
     output: Annotated[str, output],
     config_dir: Annotated[str, config_dir],
-    protocol: Annotated[str, protocol],
+    protocol: Annotated[str, protocol] = None,
+    limit: Annotated[int, limit] = 10000,
     ips: Annotated[bool, typer.Option("--ips", help="Show the source IPs.")] = False,
 ):
     """
@@ -395,7 +453,7 @@ def payloads(
     init(config_dir)
     writer = initOutfile(output)
     try:
-        response = asyncio.run(client.get_payloads(protocol))
+        response = asyncio.run(client.get_payloads(protocol=protocol, limit=limit))
         if len(response.top_payloads.payloads) == 0:
             print("no results found.")
         for payload in response.top_payloads.payloads:

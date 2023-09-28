@@ -1,5 +1,5 @@
-query getPayloads($protocol: String!) {
-  topPayloads(input: { protocol: $protocol }) {
+query getPayloads($protocol: String, $limit: Int) {
+  topPayloads(input: { protocol: $protocol, limit: $limit }) {
     payloads {
       protocol
       size
@@ -9,6 +9,7 @@ query getPayloads($protocol: String!) {
       source_ip_count
       pervasiveness
       source_ips
+      sha256_sum
     }
   }
 }
