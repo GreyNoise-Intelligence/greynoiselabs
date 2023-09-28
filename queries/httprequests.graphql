@@ -1,4 +1,4 @@
-query getRequests($useragent: String!) {
+query getRequests($useragent: String) {
   topHTTPRequests(input: { userAgent: $useragent }) {
     httpRequests {
       path

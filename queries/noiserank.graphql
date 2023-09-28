@@ -1,4 +1,4 @@
-query getNoiseRanks($ip: String!) {
+query getNoiseRanks($ip: String) {
   noiseRank(ip: $ip) {
     ips{
       ip

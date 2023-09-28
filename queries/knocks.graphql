@@ -1,4 +1,4 @@
-query getKnocks($ip: String!) {
+query getKnocks($ip: String) {
   topKnocks(ip: $ip) {
     knock {
       source_ip
@@ -17,5 +17,4 @@ query getKnocks($ip: String!) {
       tor_exit
     }
   }
-  
 }
