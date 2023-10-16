@@ -444,6 +444,9 @@ def payloads(
     protocol: Annotated[str, protocol] = None,
     limit: Annotated[int, limit] = 10000,
     ips: Annotated[bool, typer.Option("--ips", help="Show the source IPs.")] = False,
+    countries: Annotated[
+        bool, typer.Option("--countries", help="Show the destination countries.")
+    ] = False,
 ):
     """
     Return the top 1% of observed payloads ranked by pervasiveness
@@ -459,6 +462,8 @@ def payloads(
         for payload in response.top_payloads.payloads:
             if not ips:
                 delattr(payload, "source_ips")
+            if not countries:
+                delattr(payload, "countries")
             out(payload, writer)
     except GraphQLClientGraphQLMultiError as ex:
         if NOT_READY_MSG in str(ex):

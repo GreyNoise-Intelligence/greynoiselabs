@@ -9,6 +9,7 @@ query getPayloads($protocol: String, $limit: Int) {
       source_ip_count
       pervasiveness
       source_ips
+      countries
       sha256_sum
     }
   }
